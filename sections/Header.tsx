@@ -1,3 +1,4 @@
+import SignInDialog from "@/components/SignInDialog";
 import { Button } from "@/components/ui/button";
 
 const Header = () => {
@@ -6,6 +7,7 @@ const Header = () => {
       <div className="flex justify-between items-center">
         <div>TwentyDollarClub</div>
         <div className="flex items-center gap-5 text-black">
+          <SignInDialog />
           <Button size="sm">Become a member</Button>
         </div>
       </div>
