@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import Link from "next/link";
 
 const HomeHero = () => {
   return (
@@ -8,6 +9,7 @@ const HomeHero = () => {
         src="/images/hero_bg.jpg"
         alt="Community background"
         fill={true}
+        preload={true}
         className="object-cover -z-10 opacity-90"
       />
       <h1 className="text-5xl font-bold bg-clip-text py-2">
@@ -16,7 +18,9 @@ const HomeHero = () => {
       <p className="text-xl tracking-tight mt-6 mb-10">
         Join a trusted community where collective empowerment leads to wealth.
       </p>
-      <Button size="sm">Become a member</Button>
+      <Link href="/register">
+        <Button size="sm">Become a member</Button>
+      </Link>
     </section>
   );
 };

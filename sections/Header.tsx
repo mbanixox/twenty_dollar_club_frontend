@@ -1,5 +1,6 @@
 import SignInDialog from "@/components/SignInDialog";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 const Header = () => {
   return (
@@ -8,7 +9,9 @@ const Header = () => {
         <div>TwentyDollarClub</div>
         <div className="flex items-center gap-5 text-black">
           <SignInDialog />
-          <Button size="sm">Become a member</Button>
+          <Link href="/register">
+            <Button size="sm">Become a member</Button>
+          </Link>
         </div>
       </div>
     </header>
