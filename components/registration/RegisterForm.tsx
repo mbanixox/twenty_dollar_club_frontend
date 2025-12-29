@@ -22,8 +22,7 @@ const RegisterForm = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [showPassword, setShowPassword] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [credentialsSubmitted, setCredentialsSubmitted] = useState(false);
+  const [, setCredentialsSubmitted] = useState(false);
   const [isSubmittingStep1, setIsSubmittingStep1] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -35,8 +34,6 @@ const RegisterForm = () => {
     gender: "",
     mpesa_phone: "",
   });
-
-  const registrationAmount = 1;
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -82,22 +79,10 @@ const RegisterForm = () => {
   };
 
   const handleSubmit = async () => {
-    setIsSubmitting(true);
-    try {
-      // Handle M-Pesa payment here
-      // For now, just redirect on success
-      toast.success("Registration complete!", {
-        description: "Welcome to the 20 Dollar Club!",
-      });
-      router.push("/");
-    } catch (error) {
-      console.error("Payment failed:", error);
-      toast.error("Payment failed", {
-        description: "Please try again or contact support.",
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
+    toast.success("Registration complete!", {
+      description: "Welcome to the 20 Dollar Club!",
+    });
+    router.push("/");
   };
 
   const canProceed = () => {
@@ -190,8 +175,8 @@ const RegisterForm = () => {
       {currentStep === 3 && (
         <MpesaPaymentStep
           phoneNumber={formData.mpesa_phone}
-          amount={registrationAmount}
           onPhoneChange={handleInputChange}
+          onPaymentSuccess={handleSubmit}
         />
       )}
 
@@ -208,7 +193,7 @@ const RegisterForm = () => {
           Back
         </Button>
 
-        {currentStep < 3 ? (
+        {currentStep < 3 && (
           <Button 
             type="button" 
             onClick={currentStep === 1 ? handleStep1Submit : handleNext} 
@@ -228,16 +213,6 @@ const RegisterForm = () => {
                 <ArrowRight className="w-5 h-5" />
               </>
             )}
-          </Button>
-        ) : (
-          <Button
-            type="button"
-            onClick={handleSubmit}
-            disabled={!canProceed() || isSubmitting}
-            className="gap-2"
-          >
-            {isSubmitting ? "Processing Payment..." : "Complete Registration"}
-            <Check className="w-5 h-5" />
           </Button>
         )}
       </div>

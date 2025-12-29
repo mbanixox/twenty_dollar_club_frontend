@@ -1,21 +1,57 @@
 "use client";
 
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
-import { Smartphone, AlertCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Smartphone, AlertCircle, Check } from "lucide-react";
+import { membershipPaymentRequest } from "@/lib/mpesa/actions";
+import { toast } from "sonner";
 
 interface MpesaPaymentStepProps {
   phoneNumber: string;
-  amount: number;
   onPhoneChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onPaymentSuccess: () => void;
 }
 
 const MpesaPaymentStep = ({
   phoneNumber,
-  amount,
   onPhoneChange,
+  onPaymentSuccess,
 }: MpesaPaymentStepProps) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const amount = 1; // Registration amount in KSH
+
+  const handlePayment = async () => {
+    setIsSubmitting(true);
+    try {
+      const formData = new FormData();
+      formData.append("phone", phoneNumber);
+      formData.append("amount", amount.toString());
+
+      const result = await membershipPaymentRequest(formData);
+
+      if (result.status === "success") {
+        toast.success("Payment request sent!", {
+          description: result.message || "Check your phone to complete payment.",
+        });
+        onPaymentSuccess();
+      } else {
+        toast.error("Payment request failed", {
+          description: result.error || "Please try again.",
+        });
+      }
+    } catch (error) {
+      console.error("Payment error:", error);
+      toast.error("Payment failed", {
+        description: "An error occurred. Please try again.",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
   return (
     <div className="space-y-6 animate-in fade-in-0 slide-in-from-bottom-2 duration-300">
       <div>
@@ -51,9 +87,11 @@ const MpesaPaymentStep = ({
             name="mpesa_phone"
             value={phoneNumber}
             onChange={onPhoneChange}
+            pattern="254[0-9]{9}"
             className="mt-1"
             placeholder="254700000000"
             maxLength={12}
+            required
           />
           <p className="text-xs text-muted-foreground mt-1">
             Enter your M-Pesa registered phone number (e.g., 254712345678)
@@ -79,6 +117,23 @@ const MpesaPaymentStep = ({
           <Smartphone className="w-4 h-4" />
           <span>Secure payment powered by Safaricom M-Pesa</span>
         </div>
+
+        <Button
+          type="button"
+          onClick={handlePayment}
+          disabled={!phoneNumber || phoneNumber.length < 12 || isSubmitting}
+          className="w-full gap-2 mt-4"
+          size="lg"
+        >
+          {isSubmitting ? (
+            "Processing..."
+          ) : (
+            <>
+              Complete Payment
+              <Check className="w-5 h-5" />
+            </>
+          )}
+        </Button>
       </div>
     </div>
   );
