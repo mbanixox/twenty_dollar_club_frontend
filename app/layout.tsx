@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localfont from "next/font/local";
 import "./globals.css";
+import { Toaster } from "@/components/ui/sonner";
 
 const lato = localfont({
   src: [
@@ -74,6 +75,7 @@ export default function RootLayout({
         className={`${lato.variable} ${lato.variable} antialiased`}
       >
         {children}
+        <Toaster />
       </body>
     </html>
   );

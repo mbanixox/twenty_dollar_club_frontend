@@ -1,24 +1,14 @@
-import RegisterForm from "@/components/RegisterForm";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import RegisterForm from "@/components/registration/RegisterForm";
+import { Card } from "@/components/ui/card";
 
 const Page = () => {
   return (
-    <div className="flex justify-center items-center min-h-screen">
-      <Card className="bg-white dark:bg-black-100 dark:text-white p-3 m-1 rounded-lg shadow-lg max-w-md w-full">
-        <CardHeader className="text-center">
-          <CardTitle>Register</CardTitle>
-          <CardDescription>Create an account.</CardDescription>
-        </CardHeader>
-        <CardContent>
+    <div className="min-h-screen bg-linear-to-br from-primary/5 via-secondary/5 to-accent/5 py-12 px-4">
+      <div className="max-w-3xl mx-auto">
+        <Card className="p-8 bg-white">
           <RegisterForm />
-        </CardContent>
-      </Card>
+        </Card>
+      </div>
     </div>
   );
 };

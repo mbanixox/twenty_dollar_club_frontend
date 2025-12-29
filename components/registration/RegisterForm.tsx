@@ -8,6 +8,7 @@ import CreateAccount from "@/components/registration/CreateAccount";
 import TermsConditions from "@/components/TermsConditions";
 import MpesaPaymentStep from "@/components/registration/MpesaPayment";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 const steps = [
   { id: 1, name: "Create Account", icon: User },
@@ -22,6 +23,8 @@ const RegisterForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [credentialsSubmitted, setCredentialsSubmitted] = useState(false);
+  const [isSubmittingStep1, setIsSubmittingStep1] = useState(false);
 
   const [formData, setFormData] = useState({
     first_name: "",
@@ -33,7 +36,7 @@ const RegisterForm = () => {
     mpesa_phone: "",
   });
 
-  const registrationAmount = 1000; // KSH 1000 registration fee
+  const registrationAmount = 1;
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -47,12 +50,8 @@ const RegisterForm = () => {
     if (currentStep < 3) setCurrentStep(currentStep + 1);
   };
 
-  const handleBack = () => {
-    if (currentStep > 1) setCurrentStep(currentStep - 1);
-  };
-
-  const handleSubmit = async () => {
-    setIsSubmitting(true);
+  const handleStep1Submit = async () => {
+    setIsSubmittingStep1(true);
     try {
       const formDataObj = new FormData();
       formDataObj.append("first_name", formData.first_name);
@@ -63,10 +62,39 @@ const RegisterForm = () => {
       formDataObj.append("gender", formData.gender);
 
       await registerUser(formDataObj);
-      router.push("/");
+      setCredentialsSubmitted(true);
+      toast.success("Account created successfully!", {
+        description: "You can now proceed to the next step.",
+      });
+      handleNext();
     } catch (error) {
       console.error("Registration failed:", error);
-      alert("Registration failed. Please try again.");
+      toast.error("Registration failed", {
+        description: "Please check your information and try again.",
+      });
+    } finally {
+      setIsSubmittingStep1(false);
+    }
+  };
+
+  const handleBack = () => {
+    if (currentStep > 1) setCurrentStep(currentStep - 1);
+  };
+
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    try {
+      // Handle M-Pesa payment here
+      // For now, just redirect on success
+      toast.success("Registration complete!", {
+        description: "Welcome to the 20 Dollar Club!",
+      });
+      router.push("/");
+    } catch (error) {
+      console.error("Payment failed:", error);
+      toast.error("Payment failed", {
+        description: "Please try again or contact support.",
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -125,9 +153,7 @@ const RegisterForm = () => {
                   {isCompleted ? (
                     <Check className="w-5 h-5" />
                   ) : (
-                    <div className="flex flex-col items-center">
-                      <span className="text-xs font-bold">{step.id}</span>
-                    </div>
+                    <StepIcon className="w-5 h-5" />
                   )}
                 </div>
                 <div className="mt-3 text-center">
@@ -183,9 +209,25 @@ const RegisterForm = () => {
         </Button>
 
         {currentStep < 3 ? (
-          <Button type="button" onClick={handleNext} disabled={!canProceed()} className="gap-2">
-            Continue
-            <ArrowRight className="w-5 h-5" />
+          <Button 
+            type="button" 
+            onClick={currentStep === 1 ? handleStep1Submit : handleNext} 
+            disabled={!canProceed() || (currentStep === 1 && isSubmittingStep1)} 
+            className="gap-2"
+          >
+            {currentStep === 1 && isSubmittingStep1 ? (
+              "Registering..."
+            ) : currentStep === 1 ? (
+              <>
+                Register
+                <ArrowRight className="w-5 h-5" />
+              </>
+            ) : (
+              <>
+                Continue
+                <ArrowRight className="w-5 h-5" />
+              </>
+            )}
           </Button>
         ) : (
           <Button
