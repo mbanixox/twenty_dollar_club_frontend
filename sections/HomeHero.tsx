@@ -9,7 +9,7 @@ const HomeHero = async () => {
   return (
     <section className="w-full min-h-132.5 flex justify-center items-center flex-col py-10 px-6 drop-shadow bg-cover bg-center">
       <Image
-        src="/images/hero_bg.jpg"
+        src="/images/hero2.jpg"
         alt="Community background"
         fill={true}
         preload={true}
