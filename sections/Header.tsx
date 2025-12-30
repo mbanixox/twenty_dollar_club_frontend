@@ -13,14 +13,20 @@ const Header = async () => {
         <div>TwentyDollarClub</div>
         <div className="flex items-center gap-5 text-black">
           {session ? (
-            <form
-              action={async () => {
-                "use server";
-                await signOut();
-              }}
-            >
-              <Button size="sm">Sign Out</Button>
-            </form>
+            <>
+
+            <Link href="/dashboard">
+                <Button variant="link" className="text-black" size="sm">Dashboard</Button>
+              </Link>
+              <form
+                action={async () => {
+                  "use server";
+                  await signOut();
+                }}
+              >
+                <Button size="sm">Sign Out</Button>
+              </form>
+            </>
           ) : (
             <>
               <SignInDialog />
