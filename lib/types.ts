@@ -6,6 +6,7 @@ export type User = {
   phone_number: string;
   gender: string;
   membership?: Membership;
+  beneficiaries?: Beneficiary[];
 };
 
 export type Session = {
@@ -18,3 +19,9 @@ export type Membership = {
   role: "member" | "admin";
   generated_id: number;
 };
+
+export type Beneficiary = {
+  id: string;
+  beneficiary_name: string;
+  relationship: string;
+}

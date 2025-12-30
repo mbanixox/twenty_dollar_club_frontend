@@ -14,6 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DataTableColumnHeader } from "@/components/tables/DataTableColumnHeader";
+import { toast } from "sonner";
 
 export const columns: ColumnDef<Membership>[] = [
   {
@@ -67,9 +68,14 @@ export const columns: ColumnDef<Membership>[] = [
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuLabel><span className="font-extrabold">Actions</span></DropdownMenuLabel>
+            <DropdownMenuLabel>
+              <span className="font-extrabold">Actions</span>
+            </DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(membership.id)}
+              onClick={() => {
+                navigator.clipboard.writeText(membership.id);
+                toast.success("Membership ID copied to clipboard");
+              }}
             >
               Copy membership ID
             </DropdownMenuItem>

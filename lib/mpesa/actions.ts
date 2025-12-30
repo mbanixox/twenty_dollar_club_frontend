@@ -2,7 +2,7 @@
 
 import { getAuthToken } from "@/lib/auth/actions";
 
-const base_url = process.env.BACKEND_URL;
+const base_url = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export const membershipPaymentRequest = async (formData: FormData) => {
   const rawFormData = {

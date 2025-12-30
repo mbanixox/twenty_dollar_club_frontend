@@ -30,13 +30,17 @@ import { DataTableViewOptions } from "@/components/tables/DataTableViewOptions";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  renderFilter?: (table: ReturnType<typeof useReactTable<TData>>) => React.ReactNode;
+  renderFilter?: (
+    table: ReturnType<typeof useReactTable<TData>>
+  ) => React.ReactNode;
+  renderAddButton?: () => React.ReactNode;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   renderFilter,
+  renderAddButton,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -69,9 +73,12 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="lg:min-w-175 px-6">
-      <div className="flex items-center py-4">
-        {renderFilter?.(table)}
-        <DataTableViewOptions table={table} />
+      <div className="flex items-center py-4 justify-between">
+        <div>{renderFilter?.(table)}</div>
+        <div className="flex items-center gap-2">
+          {renderAddButton?.()}
+          <DataTableViewOptions table={table} />
+        </div>
       </div>
 
       <div className="overflow-hidden rounded-md border">

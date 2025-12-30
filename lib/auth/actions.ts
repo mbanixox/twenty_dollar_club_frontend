@@ -2,7 +2,7 @@
 
 import { cookies } from "next/headers";
 
-const base_url = process.env.BACKEND_URL;
+const base_url = process.env.NEXT_PUBLIC_BACKEND_URL;
 const isProduction = process.env.NODE_ENV === "production";
 
 export const signInWithCredentials = async (
