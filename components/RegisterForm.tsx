@@ -33,8 +33,6 @@ const RegisterForm = () => {
     mpesa_phone: "",
   });
 
-  const registrationAmount = 1000; // KSH 1000 registration fee
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -126,7 +124,7 @@ const RegisterForm = () => {
                     <Check className="w-5 h-5" />
                   ) : (
                     <div className="flex flex-col items-center">
-                      <span className="text-xs font-bold">{step.id}</span>
+                      <StepIcon className="w-5 h-5" />
                     </div>
                   )}
                 </div>
@@ -164,7 +162,6 @@ const RegisterForm = () => {
       {currentStep === 3 && (
         <MpesaPaymentStep
           phoneNumber={formData.mpesa_phone}
-          amount={registrationAmount}
           onPhoneChange={handleInputChange}
         />
       )}

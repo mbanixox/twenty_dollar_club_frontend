@@ -1,7 +1,9 @@
 import { Button } from "@/components/ui/button";
+import { getSession } from "@/lib/auth/session";
 import Link from "next/link";
 
-const InfoDisplay = () => {
+const InfoDisplay = async () => {
+  const session = await getSession();
   return (
     <>
       <section className="py-12 px-4 md:px-8 shadow mb-8 font-sans">
@@ -123,8 +125,8 @@ const InfoDisplay = () => {
                 Express Your Interest
               </h3>
               <p className="text-muted-foreground">
-                Fill out our simple online application form. It takes just a
-                few minutes, and there&apos;s no obligation.
+                Fill out our simple online application form. It takes just a few
+                minutes, and there&apos;s no obligation.
               </p>
             </div>
             <div className="bg-popover rounded-lg p-6 shadow flex flex-col items-center text-center">
@@ -269,14 +271,16 @@ const InfoDisplay = () => {
           who have discovered the power of community-driven support, transparent
           contributions, and shared success. Your spot in our family is ready.
         </p>
-        <Link href={"/register"}>
-          <Button
-            className="inline-block bg-accent text-accent-foreground font-semibold 
+        {!session && (
+          <Link href={"/register"}>
+            <Button
+              className="inline-block bg-accent text-accent-foreground font-semibold 
             rounded-lg shadow hover:bg-accent/80 transition px-10 text-lg min-w-72 min-h-12"
-          >
-            Apply for Membership Today
-          </Button>
-        </Link>
+            >
+              Apply for Membership Today
+            </Button>
+          </Link>
+        )}
       </section>
     </>
   );

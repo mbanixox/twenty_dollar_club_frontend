@@ -12,13 +12,12 @@ import { toast } from "sonner";
 interface MpesaPaymentStepProps {
   phoneNumber: string;
   onPhoneChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onPaymentSuccess: () => void;
+  onPaymentSuccess?: () => void;
 }
 
 const MpesaPaymentStep = ({
   phoneNumber,
   onPhoneChange,
-  onPaymentSuccess,
 }: MpesaPaymentStepProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -37,7 +36,6 @@ const MpesaPaymentStep = ({
         toast.success("Payment request sent!", {
           description: result.message || "Check your phone to complete payment.",
         });
-        onPaymentSuccess();
       } else {
         toast.error("Payment request failed", {
           description: result.error || "Please try again.",
