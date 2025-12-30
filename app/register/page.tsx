@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 
 const Page = () => {
   return (
-    <div className="min-h-screen bg-linear-to-br from-primary/5 via-secondary/5 to-accent/5 py-12 px-4">
+    <div className="font-sans min-h-screen bg-linear-to-br from-primary/5 via-secondary/5 to-accent/5 py-12 px-4">
       <div className="max-w-3xl mx-auto">
         <Card className="p-8 bg-white">
           <RegisterForm />
