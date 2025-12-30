@@ -1,91 +1,14 @@
-import { columns, Payment } from "../../../../components/tables/columns"
-import { DataTable } from "../../../../components/tables/data-table"
+import { getMemberships } from "@/lib/memberships/actions";
+import MembershipsTable from "@/components/membership/MembershipTable";
 
-async function getData(): Promise<Payment[]> {
-  // Fetch data from your API here.
-  return [
-    {
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "a@example.com",
-    },
-    {
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "b@example.com",
-    },{
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "c@example.com",
-    },{
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "d@example.com",
-    },{
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "e@example.com",
-    },{
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "f@example.com",
-    },{
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "g@example.com",
-    },{
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "h@example.com",
-    },{
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "i@example.com",
-    },{
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "j@example.com",
-    },{
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "k@example.com",
-    },{
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "l@example.com",
-    },{
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "m@example.com",
-    },{
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "n@example.com",
-    },
-    // ...
-  ]
-}
-
-export default async function DemoPage() {
-  const data = await getData()
+export default async function Page() {
+  const data = await getMemberships();
 
   return (
     <div className="container mx-auto py-10">
-      <DataTable columns={columns} data={data} />
+      <h1 className="text-3xl font-bold mb-2 px-6">Members</h1>
+      <p className="text-muted-foreground mb-6 px-6">List of members</p>
+      <MembershipsTable data={data.data} />
     </div>
-  )
+  );
 }

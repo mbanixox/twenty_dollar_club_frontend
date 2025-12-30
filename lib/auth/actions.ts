@@ -15,7 +15,7 @@ export const signInWithCredentials = async (
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ email, hashed_password }),
-    credentials: "include",
+
   });
 
   if (!res.ok) {
