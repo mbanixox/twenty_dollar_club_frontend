@@ -31,7 +31,7 @@ const SignInDialog = () => {
 
     try {
       const result = await signInWithCredentials(email, password);
-      if (result) router.refresh();
+      if (result) router.push("/dashboard");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Sign in failed");
     } finally {
