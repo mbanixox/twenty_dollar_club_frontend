@@ -50,8 +50,6 @@ const EditBeneficiaryDialog = ({
       if (result) {
         toast.success("Beneficiary updated successfully");
         onOpenChange?.(false);
-        setBeneficiaryName("");
-        setRelationship("");
         router.refresh();
       }
     } catch (err) {

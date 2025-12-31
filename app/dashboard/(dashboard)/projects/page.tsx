@@ -1,5 +1,14 @@
-const Page = () => {
-  return <div>Projects Page</div>;
-};
+import { getProjects } from "@/lib/projects/actions";
+import ProjectsTable from "@/components/projects/ProjectsTable";
 
-export default Page;
+export default async function Page() {
+  const data = await getProjects();
+
+  return (
+    <div className="container mx-auto py-10">
+      <h1 className="text-3xl font-bold mb-2 px-6">Projects</h1>
+      <p className="text-muted-foreground mb-6 px-6">List of Projects</p>
+      <ProjectsTable data={data.data} />
+    </div>
+  );
+}
