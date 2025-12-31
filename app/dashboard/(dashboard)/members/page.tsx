@@ -1,8 +1,8 @@
-import { getMemberships } from "@/lib/memberships/actions";
+import { getUsersWithMemberships } from "@/lib/memberships/actions";
 import MembershipsTable from "@/components/membership/MembershipTable";
 
 export default async function Page() {
-  const data = await getMemberships();
+  const data = await getUsersWithMemberships();
 
   return (
     <div className="container mx-auto py-10">

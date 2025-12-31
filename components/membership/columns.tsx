@@ -1,6 +1,6 @@
 "use client";
 
-import { Membership } from "@/lib/types";
+import { User } from "@/lib/types";
 import { MoreHorizontal } from "lucide-react";
 import { ColumnDef } from "@tanstack/react-table";
 import {
@@ -16,7 +16,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { DataTableColumnHeader } from "@/components/tables/DataTableColumnHeader";
 import { toast } from "sonner";
 
-export const columns: ColumnDef<Membership>[] = [
+export const columns: ColumnDef<User>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -32,6 +32,7 @@ export const columns: ColumnDef<Membership>[] = [
     cell: ({ row }) => (
       <Checkbox
         checked={row.getIsSelected()}
+        id={row.original.membership?.id}
         onCheckedChange={(value) => row.toggleSelected(!!value)}
         aria-label="Select row"
       />
@@ -40,24 +41,45 @@ export const columns: ColumnDef<Membership>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "role",
+    id: "generated_id",
+    header: () => <div>Generated ID</div>,
+    cell: ({ row }) => row.original.membership?.generated_id ?? "-",
+    accessorFn: (row) => row.membership?.generated_id,
+  },
+  {
+    id: "full_name",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Full Name" />
+    ),
+    cell: ({ row }) => {
+      const { first_name, last_name } = row.original;
+      return `${first_name} ${last_name}`;
+    },
+    accessorFn: (row) => `${row.first_name} ${row.last_name}`,
+  },
+  {
+    accessorKey: "email",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Email" />
+    ),
+  },
+  {
+    accessorKey: "phone_number",
+    header: () => <div>Phone Number</div>
+  },
+  {
+    id: "role",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Role" />
     ),
-  },
-  {
-    accessorKey: "generated_id",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Generated ID" />
-    ),
+    cell: ({ row }) => row.original.membership?.role,
+    accessorFn: (row) => row.membership?.role,
   },
   {
     id: "actions",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Actions" />
-    ),
+    header: () => <div>Actions</div>,
     cell: ({ row }) => {
-      const membership = row.original;
+      const user = row.original;
 
       return (
         <DropdownMenu>
@@ -73,11 +95,17 @@ export const columns: ColumnDef<Membership>[] = [
             </DropdownMenuLabel>
             <DropdownMenuItem
               onClick={() => {
-                navigator.clipboard.writeText(membership.id);
-                toast.success("Membership ID copied to clipboard");
+                if (user.membership?.generated_id) {
+                  navigator.clipboard.writeText(
+                    user.membership?.generated_id.toString()
+                  );
+                  toast.success("Generated ID copied to clipboard");
+                } else {
+                  toast.error("No Generated ID found");
+                }
               }}
             >
-              Copy membership ID
+              Copy Generated ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>View member</DropdownMenuItem>

@@ -1,12 +1,12 @@
 "use client";
 
+import { User } from "@/lib/types";
+import { Input } from "@/components/ui/input";
 import { columns } from "@/components/membership/columns";
 import { DataTable } from "@/components/tables/data-table";
-import { Input } from "@/components/ui/input";
-import { Membership } from "@/lib/types";
 
 interface MembershipsTableProps {
-  data: Membership[];
+  data: User[];
 }
 
 const MembershipsTable = ({ data }: MembershipsTableProps) => {
@@ -16,10 +16,10 @@ const MembershipsTable = ({ data }: MembershipsTableProps) => {
       data={data}
       renderFilter={(table) => (
         <Input
-          placeholder="Filter by role..."
-          value={(table.getColumn("role")?.getFilterValue() as string) ?? ""}
+          placeholder="Filter by name..."
+          value={(table.getColumn("full_name")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn("role")?.setFilterValue(event.target.value)
+            table.getColumn("full_name")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
