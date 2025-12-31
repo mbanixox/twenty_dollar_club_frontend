@@ -1,67 +1,43 @@
-import {
-  DollarSign,
-  Folder,
-  Heart,
-  Users,
-} from "lucide-react";
+import { Users } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import Link from "next/link";
+import SidebarMenuWrapper from "./SidebarMenuWrapper";
 
-const items = [
-  {
-    title: "Members",
-    url: "/dashboard/members",
-    icon: Users,
-  },
-  {
-    title: "Projects",
-    url: "/dashboard/projects",
-    icon: Folder,
-  },
-  {
-    title: "Beneficiaries",
-    url: "/dashboard/beneficiaries",
-    icon: Heart,
-  },
-  {
-    title: "Project Contributions",
-    url: "/dashboard/project-contributions",
-    icon: DollarSign,
-  },
-];
-
-export function AppSidebar() {
+export async function AppSidebar() {
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader>
-        <div className="px-4 py-2 font-bold">Twenty Dollar Club</div>
+      <SidebarHeader className="border-b">
+        <div className="flex items-center gap-2 px-4 py-3 group-data-[collapsible=icon]:justify-center">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold text-sm shrink-0">
+            $20
+          </div>
+          <span className="font-semibold text-base group-data-[collapsible=icon]:hidden">
+            Twenty Dollar Club
+          </span>
+        </div>
       </SidebarHeader>
-      <SidebarContent>
-        <SidebarMenu>
-          {items.map((item) => (
-            <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton asChild>
-                <Link href={item.url}>
-                  <item.icon />
-                  <span>{item.title}</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
-        </SidebarMenu>
+
+      <SidebarContent className="px-2 py-4">
+        <SidebarMenuWrapper />
       </SidebarContent>
-      <SidebarFooter>
-        <div className="px-4 py-2 text-sm">User Info</div>
+
+      <SidebarFooter className="border-t mt-auto">
+        <div className="px-4 py-3 flex items-center gap-3 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-2">
+          <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center shrink-0">
+            <Users className="h-4 w-4" />
+          </div>
+          <div className="flex flex-col text-xs group-data-[collapsible=icon]:hidden">
+            <span className="font-medium">User Name</span>
+            <span className="text-muted-foreground">user@example.com</span>
+          </div>
+        </div>
       </SidebarFooter>
+
       <SidebarRail />
     </Sidebar>
   );
