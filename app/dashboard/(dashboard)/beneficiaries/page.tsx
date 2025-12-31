@@ -1,7 +1,15 @@
+import { redirect } from "next/navigation";
+import { requireAuth } from "@/lib/auth/session";
 import { getBeneficiaries } from "@/lib/beneficiaries/actions";
 import BeneficiariesTable from "@/components/beneficiaries/BeneficiariesTable";
 
 export default async function Page() {
+  try {
+    await requireAuth();
+  } catch {
+    redirect("/");
+  }
+
   const data = await getBeneficiaries();
 
   return (

@@ -1,7 +1,14 @@
-import { getUsersWithMemberships } from "@/lib/memberships/actions";
 import MembershipsTable from "@/components/membership/MembershipTable";
+import { getUsersWithMemberships } from "@/lib/memberships/actions";
+import { requireAuth } from "@/lib/auth/session";
+import { redirect } from "next/navigation";
 
 export default async function Page() {
+  try {
+    await requireAuth();
+  } catch {
+    redirect("/");
+  }
   const data = await getUsersWithMemberships();
 
   return (

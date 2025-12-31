@@ -1,7 +1,15 @@
-import { getProjects } from "@/lib/projects/actions";
 import ProjectsTable from "@/components/projects/ProjectsTable";
+import { getProjects } from "@/lib/projects/actions";
+import { requireAuth } from "@/lib/auth/session";
+import { redirect } from "next/navigation";
 
 export default async function Page() {
+  try {
+    await requireAuth();
+  } catch {
+    redirect("/");
+  }
+
   const data = await getProjects();
 
   return (
