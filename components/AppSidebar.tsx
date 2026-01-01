@@ -1,4 +1,3 @@
-import { Users } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -6,9 +5,16 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import SidebarMenuWrapper from "./SidebarMenuWrapper";
+import Link from "next/link";
+import { Users } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { getSession } from "@/lib/auth/session";
+import SidebarMenuWrapper from "@/components/SidebarMenuWrapper";
 
 export async function AppSidebar() {
+  const session = await getSession();
+  const user = session?.user;
+
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader className="border-b">
@@ -27,15 +33,34 @@ export async function AppSidebar() {
       </SidebarContent>
 
       <SidebarFooter className="border-t mt-auto">
-        <div className="px-4 py-3 flex items-center gap-3 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-2">
+        <Link
+          href="/dashboard/profile"
+          className="px-4 py-3 flex items-center gap-3 hover:bg-muted/50 rounded-lg transition-colors group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-2"
+        >
           <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center shrink-0">
             <Users className="h-4 w-4" />
           </div>
-          <div className="flex flex-col text-xs group-data-[collapsible=icon]:hidden">
-            <span className="font-medium">User Name</span>
-            <span className="text-muted-foreground">user@example.com</span>
-          </div>
-        </div>
+          {user && (
+            <div className="flex flex-col gap-1 text-xs group-data-[collapsible=icon]:hidden">
+              <span className="font-medium">
+                {user.first_name} {user.last_name}
+              </span>
+              <span className="text-muted-foreground truncate">
+                {user.email}
+              </span>
+              {user.membership && (
+                <Badge
+                  variant={
+                    user.membership.role === "admin" ? "default" : "secondary"
+                  }
+                  className="w-fit text-xs"
+                >
+                  {user.membership.role}
+                </Badge>
+              )}
+            </div>
+          )}
+        </Link>
       </SidebarFooter>
 
       <SidebarRail />
