@@ -1,27 +1,48 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Smartphone, AlertCircle, Check } from "lucide-react";
+import { Smartphone, AlertCircle, Check, Loader2 } from "lucide-react";
 import { membershipPaymentRequest } from "@/lib/mpesa/actions";
 import { toast } from "sonner";
+import { usePaymentSocket } from "@/hooks/usePaymentSocket";
 
 interface MpesaPaymentStepProps {
   phoneNumber: string;
+  userEmail: string;
   onPhoneChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onPaymentSuccess?: () => void;
 }
 
 const MpesaPaymentStep = ({
   phoneNumber,
+  userEmail,
   onPhoneChange,
+  onPaymentSuccess,
 }: MpesaPaymentStepProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [waitingForPayment, setWaitingForPayment] = useState(false);
 
   const amount = 1; // Registration amount in KSH
+
+  // Initialize WebSocket - only when waiting for payment
+  const { disconnect } = usePaymentSocket({
+    userEmail,
+    enabled: waitingForPayment,
+  });
+
+  // Add cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (waitingForPayment) {
+        console.log("Component unmounting, disconnecting socket");
+        disconnect();
+      }
+    };
+  }, [waitingForPayment, disconnect]);
 
   const handlePayment = async () => {
     setIsSubmitting(true);
@@ -34,22 +55,25 @@ const MpesaPaymentStep = ({
 
       if (result.status === "success") {
         toast.success("Payment request sent!", {
-          description: result.message || "Check your phone to complete payment.",
+          description:
+            result.message || "Check your phone to complete payment.",
         });
+        setWaitingForPayment(true);
       } else {
         toast.error("Payment request failed", {
           description: result.error || "Please try again.",
         });
+        setIsSubmitting(false);
       }
     } catch (error) {
       console.error("Payment error:", error);
       toast.error("Payment failed", {
         description: "An error occurred. Please try again.",
       });
-    } finally {
       setIsSubmitting(false);
     }
   };
+
   return (
     <div className="space-y-6 animate-in fade-in-0 slide-in-from-bottom-2 duration-300">
       <div>
@@ -90,6 +114,7 @@ const MpesaPaymentStep = ({
             placeholder="254700000000"
             maxLength={12}
             required
+            disabled={isSubmitting || waitingForPayment}
           />
           <p className="text-xs text-muted-foreground mt-1">
             Enter your M-Pesa registered phone number (e.g., 254712345678)
@@ -102,7 +127,7 @@ const MpesaPaymentStep = ({
             <div className="space-y-2 text-sm text-foreground">
               <p className="font-medium">How to complete payment:</p>
               <ol className="list-decimal list-inside space-y-1 text-muted-foreground">
-                <li>Click &quot;Complete Registration&quot; to receive STK push</li>
+                <li>Click &quot;Complete Payment&quot; to receive STK push</li>
                 <li>Enter your M-Pesa PIN on your phone</li>
                 <li>You&apos;ll receive a confirmation message</li>
                 <li>Your account will be activated automatically</li>
@@ -110,6 +135,23 @@ const MpesaPaymentStep = ({
             </div>
           </div>
         </Card>
+
+        {waitingForPayment && (
+          <Card className="p-4 border-primary/20 bg-primary/5">
+            <div className="flex items-center gap-3">
+              <Loader2 className="w-5 h-5 text-primary animate-spin" />
+              <div>
+                <p className="font-medium text-sm text-foreground">
+                  Waiting for payment confirmation...
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Please complete the payment on your phone. Do not close this
+                  page.
+                </p>
+              </div>
+            </div>
+          </Card>
+        )}
 
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <Smartphone className="w-4 h-4" />
@@ -119,12 +161,20 @@ const MpesaPaymentStep = ({
         <Button
           type="button"
           onClick={handlePayment}
-          disabled={!phoneNumber || phoneNumber.length < 12 || isSubmitting}
+          disabled={
+            !phoneNumber ||
+            phoneNumber.length < 12 ||
+            isSubmitting ||
+            waitingForPayment
+          }
           className="w-full gap-2 mt-4"
           size="lg"
         >
-          {isSubmitting ? (
-            "Processing..."
+          {isSubmitting || waitingForPayment ? (
+            <>
+              <Loader2 className="w-5 h-5 animate-spin" />
+              {waitingForPayment ? "Waiting for Payment..." : "Processing..."}
+            </>
           ) : (
             <>
               Complete Payment

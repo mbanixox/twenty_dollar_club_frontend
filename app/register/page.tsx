@@ -1,12 +1,12 @@
 import RegisterForm from "@/components/registration/RegisterForm";
 import { Card } from "@/components/ui/card";
-import { getSession } from "@/lib/auth/session";
+import { hasMembership } from "@/lib/auth/session";
 import { redirect } from "next/navigation";
 
 const Page = async () => {
-  const session = await getSession();
+  const userHasMembership = await hasMembership();
 
-  if (session) {
+  if (userHasMembership) {
     redirect("/");
   }
 

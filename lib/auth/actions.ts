@@ -1,6 +1,8 @@
 "use server";
 
 import { cookies } from "next/headers";
+import { User } from "@/lib/types";
+import { revalidatePath } from "next/cache";
 
 const base_url = process.env.NEXT_PUBLIC_BACKEND_URL;
 const isProduction = process.env.NODE_ENV === "production";
@@ -15,7 +17,6 @@ export const signInWithCredentials = async (
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ email, hashed_password }),
-
   });
 
   if (!res.ok) {
@@ -87,7 +88,6 @@ export const registerUser = async (formData: FormData) => {
   });
 
   return data;
-
 };
 
 export const getAuthToken = async () => {
@@ -99,4 +99,38 @@ export const signOut = async () => {
   const cookieStore = await cookies();
   cookieStore.delete("auth_token");
   cookieStore.delete("user_data");
+};
+
+export const updateSession = async (token: string, user: User) => {
+  try {
+
+    const cookieStore = await cookies();
+
+    cookieStore.delete("auth_token");
+    cookieStore.delete("user_data");
+
+    cookieStore.set("auth_token", token, {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+      path: "/",
+    });
+
+    cookieStore.set("user_data", JSON.stringify(user), {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
+      maxAge: 60 * 60 * 24 * 7,
+      path: "/",
+    });
+
+    // Revalidate all paths to ensure fresh data
+    revalidatePath("/", "layout");
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error updating session:", error);
+    throw error;
+  }
 };
