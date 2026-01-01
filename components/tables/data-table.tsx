@@ -14,8 +14,6 @@ import {
   getPaginationRowModel,
 } from "@tanstack/react-table";
 
-import { Input } from "@/components/ui/input";
-
 import {
   Table,
   TableBody,
@@ -34,6 +32,7 @@ interface DataTableProps<TData, TValue> {
     table: ReturnType<typeof useReactTable<TData>>
   ) => React.ReactNode;
   renderAddButton?: () => React.ReactNode;
+  onRowClick?: (row: TData) => void;
 }
 
 export function DataTable<TData, TValue>({
@@ -41,6 +40,7 @@ export function DataTable<TData, TValue>({
   data,
   renderFilter,
   renderAddButton,
+  onRowClick,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -62,7 +62,7 @@ export function DataTable<TData, TValue>({
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(), // Enable pagination to 10 rows per page
+    getPaginationRowModel: getPaginationRowModel(),
     state: {
       sorting,
       rowSelection,
@@ -107,6 +107,8 @@ export function DataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
+                  onClick={() => onRowClick?.(row.original)}
+                  className={onRowClick ? "cursor-pointer hover:bg-muted/50" : ""}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
