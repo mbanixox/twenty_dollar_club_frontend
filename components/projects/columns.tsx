@@ -6,7 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import ActionsCell from "@/components/projects/ActionsCell";
 import { DataTableColumnHeader } from "@/components/tables/DataTableColumnHeader";
 
-export const columns: ColumnDef<Project>[] = [
+export const columns = (isAdmin: boolean): ColumnDef<Project>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -52,21 +52,25 @@ export const columns: ColumnDef<Project>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Goal Amount" />
     ),
-  },{
+  },
+  {
     accessorKey: "funded_amount",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Funded Amount" />
     ),
   },
-  {
-    id: "actions",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Actions" />
-    ),
-    cell: ({ row }) => {
-      const project = row.original;
-
-      return <ActionsCell project={project} />;
-    },
-  },
+  ...(isAdmin
+    ? [
+        {
+          id: "actions",
+          header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="Actions" />
+          ),
+          cell: ({ row }) => {
+            const project = row.original;
+            return <ActionsCell project={project} />;
+          },
+        } as ColumnDef<Project>,
+      ]
+    : []),
 ];

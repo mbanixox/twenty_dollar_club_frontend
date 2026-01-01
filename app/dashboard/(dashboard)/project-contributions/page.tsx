@@ -1,12 +1,8 @@
-import { requireAuth } from "@/lib/auth/session";
-import { redirect } from "next/navigation";
+import { requireMembership } from "@/lib/auth/session";
 
 const Page = async () => {
-  try {
-    await requireAuth();
-  } catch {
-    redirect("/");
-  }
+  await requireMembership();
+
   return <div>Project Contributions Page</div>;
 };
 

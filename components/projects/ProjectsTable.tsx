@@ -8,12 +8,13 @@ import CreateProjectDialog from "@/components/projects/CreateProjectDialog";
 
 interface ProjectsTableProps {
   data: Project[];
+  isAdmin: boolean;
 }
 
-const ProjectsTable = ({ data }: ProjectsTableProps) => {
+const ProjectsTable = ({ data, isAdmin: isAdminMember }: ProjectsTableProps) => {
   return (
     <DataTable
-      columns={columns}
+      columns={columns(isAdminMember)}
       data={data}
       renderFilter={(table) => (
         <Input
@@ -30,7 +31,7 @@ const ProjectsTable = ({ data }: ProjectsTableProps) => {
           className="max-w-sm"
         />
       )}
-      renderAddButton={() => <CreateProjectDialog />}
+      renderAddButton={() => isAdminMember && <CreateProjectDialog />}
     />
   );
 };

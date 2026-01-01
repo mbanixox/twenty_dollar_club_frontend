@@ -2,6 +2,7 @@
 
 import { cookies } from "next/headers";
 import { Session } from "@/lib/types";
+import { redirect } from "next/navigation";
 
 export const getSession = async (): Promise<Session | null> => {
   const cookieStore = await cookies();
@@ -28,4 +29,34 @@ export const requireAuth = async (): Promise<Session> => {
   }
 
   return session;
+}
+
+export const requireMembership = async (): Promise<Session> => {
+  const session = await requireAuth();
+
+  if (!session.user.membership) {
+    redirect("/");
+  }
+
+  return session;
+}
+
+export const requireAdmin = async (): Promise<Session> => {
+  const session = await requireAuth();
+
+  if (session.user.membership?.role !== "admin") {
+    redirect("/dashboard/members");
+  }
+
+  return session;
+}
+
+export const isAdmin = async (): Promise<boolean> => {
+  const session = await getSession();
+  return session?.user.membership?.role === "admin";
+}
+
+export const hasMembership = async (): Promise<boolean> => {
+  const session = await getSession();
+  return !!session?.user.membership;
 }
