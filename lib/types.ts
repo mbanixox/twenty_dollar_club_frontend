@@ -19,6 +19,7 @@ export type Membership = {
   generated_id: number;
   beneficiaries?: Beneficiary[];
   projects?: Project[];
+  contributions?: Contribution[];
 };
 
 export type Beneficiary = {
@@ -34,4 +35,19 @@ export type Project = {
   status: "active" | "completed" | "paused";
   goal_amount: number;
   funded_amount: number;
+  contributions?: Contribution[];
+};
+
+export type Contribution = {
+  id: string;
+  transaction_reference?: string;
+  payment_method: "mpesa" | "card" | "cash";
+  status: "pending" | "completed" | "failed" | "cancelled";
+  amount: number;
+  description: string;
+  phone_number?: string;
+  email?: string;
+  contribution_type: string;
+  membership_id?: string;
+  project_id?: string;
 };

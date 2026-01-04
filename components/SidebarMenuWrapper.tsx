@@ -26,8 +26,8 @@ const items = [
     icon: Heart,
   },
   {
-    title: "Project Contributions",
-    url: "/dashboard/project-contributions",
+    title: "Contributions",
+    url: "/dashboard/contributions",
     icon: DollarSign,
   },
 ];
