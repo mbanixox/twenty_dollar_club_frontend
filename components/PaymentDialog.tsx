@@ -23,14 +23,49 @@ import {
 import { Project } from "@/lib/types";
 import { DollarSign, Smartphone, CreditCard, Wallet } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { projectPaymentRequest } from "@/lib/mpesa/actions";
+import { toast } from "sonner";
 
 interface PaymentDialogProps {
   project: Project;
 }
 
-export default function PaymentDialog({ project }: PaymentDialogProps) {
+const PaymentDialog = ({ project }: PaymentDialogProps) => {
   const [open, setOpen] = useState(false);
   const [amount, setAmount] = useState("");
+  const [mpesaPhone, setMpesaPhone] = useState("");
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  const handlePayment = async () => {
+    if (!amount || !mpesaPhone) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+
+    setIsProcessing(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("project_id", project.id);
+      formData.append("phone", mpesaPhone);
+      formData.append("amount", amount);
+
+      const result = await projectPaymentRequest(formData);
+
+      if (result.status === "success") {
+        toast.success(result.message || "Payment request sent successfully");
+        setOpen(false);
+        setAmount("");
+        setMpesaPhone("");
+      } else {
+        toast.error(result.error || "Payment request failed");
+      }
+    } catch {
+      toast.error("An error occurred while processing payment");
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -97,11 +132,17 @@ export default function PaymentDialog({ project }: PaymentDialogProps) {
                     <Input
                       id="mpesa-phone"
                       type="tel"
-                      placeholder="+254 XXX XXX XXX"
+                      placeholder="254 XXX XXX XXX"
+                      value={mpesaPhone}
+                      onChange={(e) => setMpesaPhone(e.target.value)}
                     />
                   </div>
-                  <Button className="w-full" disabled={!amount}>
-                    Send M-Pesa Prompt
+                  <Button
+                    className="w-full"
+                    disabled={!amount || !mpesaPhone || isProcessing}
+                    onClick={handlePayment}
+                  >
+                    {isProcessing ? "Processing..." : "Send M-Pesa Prompt"}
                   </Button>
                   <p className="text-xs text-muted-foreground text-center">
                     You will receive a prompt on your phone to complete the
@@ -305,3 +346,5 @@ export default function PaymentDialog({ project }: PaymentDialogProps) {
     </Dialog>
   );
 }
+
+export default PaymentDialog;
