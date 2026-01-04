@@ -18,14 +18,16 @@ export async function AppSidebar() {
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader className="border-b">
-        <div className="flex items-center gap-2 px-4 py-3 group-data-[collapsible=icon]:justify-center">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold text-sm shrink-0">
-            $20
+        <Link href="/dashboard">
+          <div className="flex items-center gap-2 px-4 py-3 group-data-[collapsible=icon]:justify-center">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold text-sm shrink-0">
+              $20
+            </div>
+            <span className="font-semibold text-base group-data-[collapsible=icon]:hidden">
+              Twenty Dollar Club
+            </span>
           </div>
-          <span className="font-semibold text-base group-data-[collapsible=icon]:hidden">
-            Twenty Dollar Club
-          </span>
-        </div>
+        </Link>
       </SidebarHeader>
 
       <SidebarContent className="px-2 py-4">
