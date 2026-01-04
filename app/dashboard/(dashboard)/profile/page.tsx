@@ -21,7 +21,7 @@ import { Separator } from "@/components/ui/separator";
 import { getBeneficiaries } from "@/lib/beneficiaries/actions";
 import EditProfileDialog from "@/components/profile/EditProfileDialog";
 
-export default async function ProfilePage() {
+const Page = async () => {
   const session = await requireAuth();
 
   const beneficiariesData = await getBeneficiaries();
@@ -36,6 +36,10 @@ export default async function ProfilePage() {
   const getInitials = () => {
     return `${user.first_name[0]}${user.last_name[0]}`.toUpperCase();
   };
+
+  const formatKSH = (amount: number) => {
+    return `KSH ${amount.toLocaleString('en-KE')}`;
+  }
 
   return (
     <div className="container mx-auto py-10 px-6 max-w-5xl">
@@ -222,7 +226,7 @@ export default async function ProfilePage() {
                         Funded Amount
                       </p>
                       <p className="text-lg font-semibold">
-                        ${project.funded_amount.toLocaleString()}
+                        {formatKSH(project.funded_amount)}
                       </p>
                     </div>
                     <div className="text-right">
@@ -230,7 +234,7 @@ export default async function ProfilePage() {
                         Goal Amount
                       </p>
                       <p className="text-lg font-semibold">
-                        ${project.goal_amount.toLocaleString()}
+                        {formatKSH(project.goal_amount)}
                       </p>
                     </div>
                     <div className="text-right">
@@ -256,3 +260,5 @@ export default async function ProfilePage() {
     </div>
   );
 }
+
+export default Page;
