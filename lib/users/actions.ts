@@ -4,7 +4,7 @@ import { getAuthToken } from "@/lib/auth/actions";
 import { cookies } from "next/headers";
 import { User } from "../types";
 
-const base_url = process.env.NEXT_PUBLIC_BACKEND_URL;
+const base_url = process.env.BACKEND_URL;
 
 export const updateUserProfile = async (
   id: string,

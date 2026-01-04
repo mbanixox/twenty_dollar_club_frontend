@@ -3,7 +3,7 @@
 import { getAuthToken } from "@/lib/auth/actions";
 import { getSession, requireMembership } from "../auth/session";
 
-const base_url = process.env.NEXT_PUBLIC_BACKEND_URL;
+const base_url = process.env.BACKEND_URL;
 
 export const membershipPaymentRequest = async (formData: FormData) => {
   const session = await getSession();

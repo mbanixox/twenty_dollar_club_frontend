@@ -1,7 +1,9 @@
+"use server";
+
 import { Project } from "@/lib/types";
 import { getAuthToken } from "@/lib/auth/actions";
 
-const base_url = process.env.NEXT_PUBLIC_BACKEND_URL;
+const base_url = process.env.BACKEND_URL;
 
 export const getProjects = async () => {
   try {
