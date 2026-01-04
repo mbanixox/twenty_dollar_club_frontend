@@ -1,5 +1,10 @@
 import { AppSidebar } from "@/components/AppSidebar";
-import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import SignOut from "@/components/SignOut";
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -8,10 +13,10 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
           <SidebarTrigger />
+
+          <SignOut />
         </header>
-        <div className="flex flex-1 flex-col">
-          {children}
-        </div>
+        <div className="flex flex-1 flex-col">{children}</div>
       </SidebarInset>
     </SidebarProvider>
   );
