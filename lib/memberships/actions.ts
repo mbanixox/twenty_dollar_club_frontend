@@ -31,6 +31,33 @@ export const getMemberships = async () => {
   }
 };
 
+export const getMembershipById = async (id: string) => {
+  try {
+    const token = await getAuthToken();
+
+    const res = await fetch(`${base_url}/memberships/${id}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!res.ok) {
+      const errorText = await res.text();
+      throw new Error(
+        `Failed to fetch membership by ID: ${res.status} ${errorText}`
+      );
+    }
+
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching membership by ID:", error);
+    throw error;
+  }
+}
+
 export const getUsersWithMemberships = async () => {
   try {
     const token = await getAuthToken();
