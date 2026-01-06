@@ -97,13 +97,31 @@ export const getAuthToken = async () => {
 
 export const signOut = async () => {
   const cookieStore = await cookies();
-  cookieStore.delete("auth_token");
-  cookieStore.delete("user_data");
+  const token = cookieStore.get("auth_token")?.value;
+  try {
+    const res = await fetch(`${base_url}/users/sign_out`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    cookieStore.delete("auth_token");
+    cookieStore.delete("user_data");
+
+    if (!res.ok) {
+      throw new Error("Failed to sign out");
+    }
+
+    return res.json();
+  } catch (error) {
+    console.error("Error signing out", error);
+  }
 };
 
 export const updateSession = async (token: string, user: User) => {
   try {
-
     const cookieStore = await cookies();
 
     cookieStore.delete("auth_token");
