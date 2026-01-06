@@ -59,18 +59,14 @@ export const columns = (isAdmin: boolean): ColumnDef<Project>[] => [
       <DataTableColumnHeader column={column} title="Funded Amount" />
     ),
   },
-  ...(isAdmin
-    ? [
-        {
-          id: "actions",
-          header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Actions" />
-          ),
-          cell: ({ row }) => {
-            const project = row.original;
-            return <ActionsCell project={project} />;
-          },
-        } as ColumnDef<Project>,
-      ]
-    : []),
+  {
+    id: "actions",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Actions" />
+    ),
+    cell: ({ row }) => {
+      const project = row.original;
+      return <ActionsCell project={project} isAdmin={isAdmin} />;
+    },
+  } as ColumnDef<Project>,
 ];

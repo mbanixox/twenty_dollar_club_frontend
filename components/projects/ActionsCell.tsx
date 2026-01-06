@@ -18,12 +18,17 @@ import EditProjectDialog from "@/components/projects/EditProjectDialog";
 
 interface ActionsCellProps {
   project: Project;
+  isAdmin?: boolean;
 }
 
-const ActionsCell: React.FC<ActionsCellProps> = ({ project }) => {
+const ActionsCell: React.FC<ActionsCellProps> = ({ project, isAdmin }) => {
   const [editOpen, setEditOpen] = React.useState(false);
   const [deleteOpen, setDeleteOpen] = React.useState(false);
   const router = useRouter();
+
+  const handleViewDetails = (project: Project) => {
+    router.push(`/dashboard/projects/${project.id}`);
+  };
 
   const handleDelete = async () => {
     try {
@@ -59,15 +64,24 @@ const ActionsCell: React.FC<ActionsCellProps> = ({ project }) => {
             Copy project ID
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => setEditOpen(true)}>
-            Edit project
+          
+          <DropdownMenuItem onClick={() => handleViewDetails(project)}>
+            View project details
           </DropdownMenuItem>
-          <DropdownMenuItem
-            onClick={() => setDeleteOpen(true)}
-            className={"text-red-600"}
-          >
-            Delete project
-          </DropdownMenuItem>
+
+          {isAdmin && (
+            <>
+              <DropdownMenuItem onClick={() => setEditOpen(true)}>
+                Edit project
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => setDeleteOpen(true)}
+                className={"text-red-600"}
+              >
+                Delete project
+              </DropdownMenuItem>
+            </>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
       <EditProjectDialog

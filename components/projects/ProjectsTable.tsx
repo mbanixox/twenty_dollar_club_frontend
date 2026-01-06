@@ -5,7 +5,6 @@ import { Input } from "@/components/ui/input";
 import { columns } from "@/components/projects/columns";
 import { DataTable } from "@/components/tables/data-table";
 import CreateProjectDialog from "@/components/projects/CreateProjectDialog";
-import { useRouter } from "next/navigation";
 
 interface ProjectsTableProps {
   data: Project[];
@@ -13,17 +12,12 @@ interface ProjectsTableProps {
 }
 
 const ProjectsTable = ({ data, isAdmin: isAdminMember }: ProjectsTableProps) => {
-  const router = useRouter();
-
-  const handleRowClick = (project: Project) => {
-    router.push(`/dashboard/projects/${project.id}`);
-  };
+  
 
   return (
     <DataTable
       columns={columns(isAdminMember)}
       data={data}
-      onRowClick={handleRowClick}
       renderFilter={(table) => (
         <Input
           placeholder="Filter by name..."
