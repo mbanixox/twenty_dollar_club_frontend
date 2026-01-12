@@ -17,7 +17,9 @@ import { DataTableColumnHeader } from "@/components/tables/DataTableColumnHeader
 import { toast } from "sonner";
 import Link from "next/link";
 
-export const columns: ColumnDef<Contribution>[] = [
+export const columns = (
+  membershipIdToName: Record<string, string>
+): ColumnDef<Contribution>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -65,7 +67,18 @@ export const columns: ColumnDef<Contribution>[] = [
   },
   {
     accessorKey: "membership_id",
-    header: () => <div>Membership ID</div>,
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Name" />,
+    cell: ({ row }) => {
+      const membershipId = row.original.membership_id;
+      const email = row.original.email;
+      return (
+        <span>
+          {membershipId
+            ? membershipIdToName[membershipId] || membershipId
+            : email}
+        </span>
+      );
+    },
   },
   {
     accessorKey: "description",
@@ -113,7 +126,12 @@ export const columns: ColumnDef<Contribution>[] = [
             <DropdownMenuItem>View contribution details</DropdownMenuItem>
             {contribution.project_id && (
               <Link href={`/dashboard/projects/${contribution.project_id}`}>
-                <DropdownMenuItem>View associated project</DropdownMenuItem>
+                <DropdownMenuItem>View associated project details</DropdownMenuItem>
+              </Link>
+            )}
+            {contribution.membership_id && (
+              <Link href={`/dashboard/memberships/${contribution.membership_id}`}>
+                <DropdownMenuItem>View associated member details</DropdownMenuItem>
               </Link>
             )}
           </DropdownMenuContent>

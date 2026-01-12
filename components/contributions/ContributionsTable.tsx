@@ -7,12 +7,14 @@ import { DataTable } from "@/components/tables/data-table";
 
 interface ContributionsTableProps {
   data: Contribution[];
+  membershipIdToName: Record<string, string>;
 }
 
-const ContributionsTable = ({ data }: ContributionsTableProps) => {
+const ContributionsTable = ({ data, membershipIdToName }: ContributionsTableProps) => {
+
   return (
     <DataTable
-      columns={columns}
+      columns={columns(membershipIdToName)}
       data={data}
       renderFilter={(table) => (
         <Input
