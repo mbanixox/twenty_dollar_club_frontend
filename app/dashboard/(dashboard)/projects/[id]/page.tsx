@@ -16,7 +16,8 @@ import { getProjectById } from "@/lib/projects/actions";
 import PaymentDialog from "@/components/PaymentDialog";
 
 const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
-  await requireMembership();
+  const session = await requireMembership();
+  const user = session.user;
 
   const { id } = await params;
 
@@ -110,7 +111,7 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <PaymentDialog project={project} />
+              <PaymentDialog project={project} userEmail={user.email} />
             </CardContent>
           </Card>
         )}

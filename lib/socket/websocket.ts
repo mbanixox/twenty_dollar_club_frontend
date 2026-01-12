@@ -44,11 +44,11 @@ export class PaymentSocket {
 
   joinPaymentChannel(
     userEmail: string,
-    onMembershipCreated: (payload: {
-      token: string;
-      user: User;
-    }) => void,
-    onError: (payload: { message: string }) => void
+    callbacks: {
+      onMembershipCreated?: (payload: { token: string; user: User }) => void;
+      onProjectPaid?: (payload: { contribution_id: string; project_id: string }) => void;
+      onError?: (payload: { message: string }) => void;
+    }
   ) {
     // Don't join if already in a channel
     if (this.channel) {
@@ -58,15 +58,27 @@ export class PaymentSocket {
 
     this.channel = this.socket.channel(`payment:${userEmail}`, {});
 
-    this.channel.on("membership_created", (payload) => {
-      console.log("Membership created event received:", payload);
-      onMembershipCreated(payload);
-    });
+    // Only listen for events if callback is provided
+    if (callbacks.onMembershipCreated) {
+      this.channel.on("membership_created", (payload) => {
+        console.log("Membership created event received:", payload);
+        callbacks.onMembershipCreated!(payload);
+      });
+    }
 
-    this.channel.on("error", (payload) => {
-      console.error("Payment error event received:", payload);
-      onError(payload);
-    });
+    if (callbacks.onProjectPaid) {
+      this.channel.on("project_paid", (payload) => {
+        console.log("Project paid event received:", payload);
+        callbacks.onProjectPaid!(payload);
+      });
+    }
+
+    if (callbacks.onError) {
+      this.channel.on("error", (payload) => {
+        console.error("Payment error event received:", payload);
+        callbacks.onError!(payload);
+      });
+    }
 
     this.channel
       .join()
@@ -75,11 +87,15 @@ export class PaymentSocket {
       })
       .receive("error", (resp) => {
         console.error("Failed to join payment channel", resp);
-        onError({ message: "Failed to join payment channel" });
+        if (callbacks.onError) {
+          callbacks.onError({ message: "Failed to join payment channel" });
+        }
       })
       .receive("timeout", () => {
         console.error("Channel join timeout");
-        onError({ message: "Connection timeout" });
+        if (callbacks.onError) {
+          callbacks.onError({ message: "Connection timeout" });
+        }
       });
 
     return this.channel;

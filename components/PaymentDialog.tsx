@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -21,20 +21,66 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Project } from "@/lib/types";
-import { DollarSign, Smartphone, CreditCard, Wallet } from "lucide-react";
+import { DollarSign, Smartphone, CreditCard, Wallet, Loader2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { projectPaymentRequest } from "@/lib/mpesa/actions";
 import { toast } from "sonner";
+import { usePaymentSocket } from "@/hooks/usePaymentSocket";
+import { useRouter } from "next/navigation";
 
 interface PaymentDialogProps {
   project: Project;
+  userEmail: string; // Add this prop
 }
 
-const PaymentDialog = ({ project }: PaymentDialogProps) => {
+const PaymentDialog = ({ project, userEmail }: PaymentDialogProps) => {
   const [open, setOpen] = useState(false);
   const [amount, setAmount] = useState("");
   const [mpesaPhone, setMpesaPhone] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
+  const [waitingForPayment, setWaitingForPayment] = useState(false);
+  const router = useRouter();
+
+  // Initialize WebSocket for project payment
+  const { disconnect } = usePaymentSocket({
+    userEmail,
+    enabled: waitingForPayment,
+    onProjectPaid: (payload: { contribution_id: string; project_id: string }) => {
+      console.log("Project payment confirmed:", payload);
+      
+      toast.success("Payment successful!", {
+        description: `Your contribution to ${project.title} has been recorded.`,
+      });
+      
+      setWaitingForPayment(false);
+      setIsProcessing(false);
+      setOpen(false);
+      
+      // Reset form
+      setAmount("");
+      setMpesaPhone("");
+      
+      // Refresh the page or redirect to show updated project
+      router.refresh();
+    },
+    onError: (payload) => {
+      console.error("Payment error:", payload);
+      toast.error("Payment failed", {
+        description: payload.message || "Please try again.",
+      });
+      setWaitingForPayment(false);
+      setIsProcessing(false);
+    },
+  });
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (waitingForPayment) {
+        disconnect();
+      }
+    };
+  }, [waitingForPayment, disconnect]);
 
   const handlePayment = async () => {
     if (!amount || !mpesaPhone) {
@@ -53,16 +99,16 @@ const PaymentDialog = ({ project }: PaymentDialogProps) => {
       const result = await projectPaymentRequest(formData);
 
       if (result.status === "success") {
-        toast.success(result.message || "Payment request sent successfully");
-        setOpen(false);
-        setAmount("");
-        setMpesaPhone("");
+        toast.success(result.message || "Payment request sent successfully", {
+          description: "Check your phone to complete payment.",
+        });
+        setWaitingForPayment(true);
       } else {
         toast.error(result.error || "Payment request failed");
+        setIsProcessing(false);
       }
     } catch {
       toast.error("An error occurred while processing payment");
-    } finally {
       setIsProcessing(false);
     }
   };
@@ -95,6 +141,7 @@ const PaymentDialog = ({ project }: PaymentDialogProps) => {
               onChange={(e) => setAmount(e.target.value)}
               min="1"
               className="text-lg"
+              disabled={isProcessing || waitingForPayment}
             />
           </div>
 
@@ -103,15 +150,15 @@ const PaymentDialog = ({ project }: PaymentDialogProps) => {
           {/* Payment Methods */}
           <Tabs defaultValue="mpesa" className="w-full">
             <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="mpesa">
+              <TabsTrigger value="mpesa" disabled={isProcessing || waitingForPayment}>
                 <Smartphone className="h-4 w-4 mr-2" />
                 Mobile
               </TabsTrigger>
-              <TabsTrigger value="card">
+              <TabsTrigger value="card" disabled={isProcessing || waitingForPayment}>
                 <CreditCard className="h-4 w-4 mr-2" />
                 Card
               </TabsTrigger>
-              <TabsTrigger value="wallet">
+              <TabsTrigger value="wallet" disabled={isProcessing || waitingForPayment}>
                 <Wallet className="h-4 w-4 mr-2" />
                 Wallet
               </TabsTrigger>
@@ -135,14 +182,39 @@ const PaymentDialog = ({ project }: PaymentDialogProps) => {
                       placeholder="254 XXX XXX XXX"
                       value={mpesaPhone}
                       onChange={(e) => setMpesaPhone(e.target.value)}
+                      disabled={isProcessing || waitingForPayment}
                     />
                   </div>
+                  
+                  {waitingForPayment && (
+                    <Card className="p-4 border-primary/20 bg-primary/5">
+                      <div className="flex items-center gap-3">
+                        <Loader2 className="w-5 h-5 text-primary animate-spin" />
+                        <div>
+                          <p className="font-medium text-sm text-foreground">
+                            Waiting for payment confirmation...
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            Please complete the payment on your phone.
+                          </p>
+                        </div>
+                      </div>
+                    </Card>
+                  )}
+                  
                   <Button
                     className="w-full"
-                    disabled={!amount || !mpesaPhone || isProcessing}
+                    disabled={!amount || !mpesaPhone || isProcessing || waitingForPayment}
                     onClick={handlePayment}
                   >
-                    {isProcessing ? "Processing..." : "Send M-Pesa Prompt"}
+                    {isProcessing || waitingForPayment ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        {waitingForPayment ? "Waiting for Payment..." : "Processing..."}
+                      </>
+                    ) : (
+                      "Send M-Pesa Prompt"
+                    )}
                   </Button>
                   <p className="text-xs text-muted-foreground text-center">
                     You will receive a prompt on your phone to complete the
@@ -336,7 +408,7 @@ const PaymentDialog = ({ project }: PaymentDialogProps) => {
                   <span className="text-muted-foreground">
                     Total Contribution:
                   </span>
-                  <span className="text-2xl font-bold">${amount}</span>
+                  <span className="text-2xl font-bold">KSh {amount}</span>
                 </div>
               </CardContent>
             </Card>
@@ -345,6 +417,6 @@ const PaymentDialog = ({ project }: PaymentDialogProps) => {
       </DialogContent>
     </Dialog>
   );
-}
+};
 
 export default PaymentDialog;

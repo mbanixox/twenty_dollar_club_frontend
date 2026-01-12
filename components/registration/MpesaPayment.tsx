@@ -9,6 +9,9 @@ import { Smartphone, AlertCircle, Check, Loader2 } from "lucide-react";
 import { membershipPaymentRequest } from "@/lib/mpesa/actions";
 import { toast } from "sonner";
 import { usePaymentSocket } from "@/hooks/usePaymentSocket";
+import { useRouter } from "next/navigation";
+import { User } from "@/lib/types";
+import { updateSession } from "@/lib/auth/actions";
 
 interface MpesaPaymentStepProps {
   phoneNumber: string;
@@ -25,6 +28,7 @@ const MpesaPaymentStep = ({
 }: MpesaPaymentStepProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [waitingForPayment, setWaitingForPayment] = useState(false);
+  const router = useRouter();
 
   const amount = 1; // Registration amount in KSH
 
@@ -32,6 +36,34 @@ const MpesaPaymentStep = ({
   const { disconnect } = usePaymentSocket({
     userEmail,
     enabled: waitingForPayment,
+    onMembershipCreated: async (payload: { token: string; user: User }) => {
+      console.log("Membership created successfully:", payload);
+
+      await updateSession(payload.token, payload.user);
+
+      toast.success("Payment successful!", {
+        description: "Your membership has been activated.",
+      });
+
+      setWaitingForPayment(false);
+      setIsSubmitting(false);
+
+      // Call the success callback if provided
+      if (onPaymentSuccess) {
+        onPaymentSuccess();
+      }
+
+      // Navigate to dashboard or success page
+      router.push("/dashboard");
+    },
+    onError: (payload) => {
+      console.error("Payment error:", payload);
+      toast.error("Payment failed", {
+        description: payload.message || "Please try again.",
+      });
+      setWaitingForPayment(false);
+      setIsSubmitting(false);
+    },
   });
 
   // Add cleanup on unmount

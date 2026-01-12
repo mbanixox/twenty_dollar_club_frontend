@@ -2,24 +2,25 @@
 
 import { useEffect, useRef } from "react";
 import { PaymentSocket } from "@/lib/socket/websocket";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import { updateSession } from "@/lib/auth/actions";
+import { User } from "@/lib/types";
 
 interface UsePaymentSocketProps {
   userEmail: string;
-  onSuccess?: () => void;
   enabled?: boolean;
+  onMembershipCreated?: (payload: { token: string; user: User }) => void;
+  onProjectPaid?: (payload: { contribution_id: string; project_id: string }) => void;
+  onError?: (payload: { message: string }) => void;
 }
 
 export function usePaymentSocket({ 
   userEmail, 
-  onSuccess,
-  enabled = true 
+  enabled = true,
+  onMembershipCreated,
+  onProjectPaid,
+  onError
 }: UsePaymentSocketProps) {
   const socketRef = useRef<PaymentSocket | null>(null);
   const isInitializedRef = useRef(false);
-  const router = useRouter();
 
   useEffect(() => {
     // Prevent duplicate initialization
@@ -37,45 +38,11 @@ export function usePaymentSocket({
     // Wait a bit for connection to establish before joining channel
     const joinTimer = setTimeout(() => {
       if (socketRef.current) {
-        // Join payment channel
-        socketRef.current.joinPaymentChannel(
-          userEmail,
-          async (payload) => {
-
-            try {
-              const result = await updateSession(payload.token, payload.user);
-              console.log("Update session result:", result);
-
-              toast.success("Payment successful! Membership created.", {
-                description: "Redirecting to dashboard...",
-              });
-
-              // Refresh router cache to get new session
-              window.location.href = "/dashboard";
-
-              // Small delay to ensure everything is updated
-              await new Promise(resolve => setTimeout(resolve, 300));
-
-              // Call success callback
-              if (onSuccess) {
-                onSuccess();
-              }
-              
-              // Force full page navigation to dashboard
-              router.push("/dashboard");
-              
-            } catch (error) {
-              console.error("Failed to update session:", error);
-              toast.error("Failed to update session", {
-                description: "Please try logging in again.",
-              });
-            }
-          },
-          (payload) => {
-            console.error("Payment error:", payload.message);
-            toast.error(payload.message || "Payment failed");
-          }
-        );
+        socketRef.current.joinPaymentChannel(userEmail, {
+          onMembershipCreated,
+          onProjectPaid,
+          onError,
+        });
       }
     }, 100);
 
@@ -89,7 +56,7 @@ export function usePaymentSocket({
       }
       isInitializedRef.current = false;
     };
-  }, [userEmail, router, onSuccess, enabled]);
+  }, [userEmail, enabled, onMembershipCreated, onProjectPaid, onError]);
 
   // Return a method to manually disconnect if needed
   const disconnect = () => {
