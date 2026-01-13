@@ -1,6 +1,7 @@
 "use client";
 
 import { User } from "@/lib/types";
+import { capitalize } from "@/utils/string";
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import ActionsCell from "@/components/membership/ActionsCell";
@@ -43,9 +44,10 @@ export const columns: ColumnDef<User>[] = [
     ),
     cell: ({ row }) => {
       const { first_name, last_name } = row.original;
-      return `${first_name} ${last_name}`;
+      return `${capitalize(first_name)} ${capitalize(last_name)}`;
     },
-    accessorFn: (row) => `${row.first_name} ${row.last_name}`,
+    accessorFn: (row) =>
+      `${capitalize(row.first_name)} ${capitalize(row.last_name)}`,
   },
   {
     accessorKey: "email",
@@ -55,7 +57,7 @@ export const columns: ColumnDef<User>[] = [
   },
   {
     accessorKey: "phone_number",
-    header: () => <div>Phone Number</div>
+    header: () => <div>Phone Number</div>,
   },
   {
     id: "role",
@@ -71,9 +73,7 @@ export const columns: ColumnDef<User>[] = [
     cell: ({ row }) => {
       const user = row.original;
 
-      return (
-        <ActionsCell user={user} />
-      );
+      return <ActionsCell user={user} />;
     },
   },
 ];

@@ -1,10 +1,11 @@
-import { requireMembership } from "@/lib/auth/session";
-import { getProjects } from "@/lib/projects/actions";
-import { getBeneficiaries } from "@/lib/beneficiaries/actions";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, Folder, Heart, DollarSign } from "lucide-react";
+import { capitalize } from "@/utils/string";
 import { Beneficiary, Project } from "@/lib/types";
+import { getProjects } from "@/lib/projects/actions";
+import { requireMembership } from "@/lib/auth/session";
 import { getMemberships } from "@/lib/memberships/actions";
+import { getBeneficiaries } from "@/lib/beneficiaries/actions";
+import { Users, Folder, Heart, DollarSign } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const Page = async () => {
   const session = await requireMembership();
@@ -31,7 +32,7 @@ const Page = async () => {
   return (
     <div className="container mx-auto py-10 px-6 max-w-6xl">
       <h1 className="text-3xl font-bold mb-2">
-        Welcome, {user.first_name} {user.last_name}
+        Welcome, {capitalize(user.first_name)} {capitalize(user.last_name)}
       </h1>
       <p className="text-muted-foreground mb-8">
         Here’s an overview of your club’s activity and stats.

@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 import { Users } from "lucide-react";
+import { capitalize } from "@/utils/string";
 import { Badge } from "@/components/ui/badge";
 import { getSession } from "@/lib/auth/session";
 import SidebarMenuWrapper from "@/components/SidebarMenuWrapper";
@@ -45,7 +46,7 @@ export async function AppSidebar() {
           {user && (
             <div className="flex flex-col gap-1 text-xs group-data-[collapsible=icon]:hidden">
               <span className="font-medium">
-                {user.first_name} {user.last_name}
+                {capitalize(user.first_name)} {capitalize(user.last_name)}
               </span>
               <span className="text-muted-foreground truncate">
                 {user.email}

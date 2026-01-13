@@ -13,6 +13,7 @@ import {
     Calendar,
     Award,
 } from "lucide-react";
+import { capitalize } from "@/utils/string";
 import { Badge } from "@/components/ui/badge";
 import { requireAuth } from "@/lib/auth/session";
 import { Beneficiary, Project } from "@/lib/types";
@@ -66,7 +67,7 @@ const Page = async () => {
           )}
         </div>
         <h1 className="text-3xl font-bold">
-          {user.first_name} {user.last_name}
+          {capitalize(user.first_name)} {capitalize(user.last_name)}
         </h1>
         <p className="text-muted-foreground">{user.email}</p>
         {membership && (

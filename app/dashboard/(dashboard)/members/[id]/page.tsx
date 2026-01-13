@@ -13,6 +13,7 @@ import {
 } from "@/lib/memberships/actions";
 import Link from "next/link";
 import { User } from "@/lib/types";
+import { capitalize } from "@/utils/string";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { requireMembership } from "@/lib/auth/session";
@@ -67,7 +68,7 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
           )}
         </div>
         <h1 className="text-3xl font-bold">
-          {user.first_name} {user.last_name}
+          {capitalize(user.first_name)} {capitalize(user.last_name)}
         </h1>
         <p className="text-muted-foreground">{user.email}</p>
         {membership && (
