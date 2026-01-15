@@ -7,9 +7,10 @@ import { DataTable } from "@/components/tables/data-table";
 
 interface MembershipsTableProps {
   data: User[];
+  membership_id?: string;
 }
 
-const MembershipsTable = ({ data }: MembershipsTableProps) => {
+const MembershipsTable = ({ data, membership_id }: MembershipsTableProps) => {
   return (
     <DataTable
       columns={columns}
@@ -24,6 +25,8 @@ const MembershipsTable = ({ data }: MembershipsTableProps) => {
           className="max-w-sm"
         />
       )}
+      reportType="memberships"
+      membership_id={membership_id}
     />
   );
 }

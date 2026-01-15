@@ -22,6 +22,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import ReportButton from "@/components/tables/ReportButton";
 import { DataTablePagination } from "@/components/tables/DataTablePagination";
 import { DataTableViewOptions } from "@/components/tables/DataTableViewOptions";
 
@@ -33,6 +34,8 @@ interface DataTableProps<TData, TValue> {
   ) => React.ReactNode;
   renderAddButton?: () => React.ReactNode;
   onRowClick?: (row: TData) => void;
+  reportType?: string; // e.g., "memberships", "payments", "transactions"
+  membership_id?: string; // Current user's ID for WebSocket channel
 }
 
 export function DataTable<TData, TValue>({
@@ -41,6 +44,8 @@ export function DataTable<TData, TValue>({
   renderFilter,
   renderAddButton,
   onRowClick,
+  reportType,
+  membership_id,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -77,6 +82,9 @@ export function DataTable<TData, TValue>({
         <div>{renderFilter?.(table)}</div>
         <div className="flex items-center gap-2">
           {renderAddButton?.()}
+          {reportType && membership_id && (
+            <ReportButton reportType={reportType} membership_id={membership_id} />
+          )}
           <DataTableViewOptions table={table} />
         </div>
       </div>
@@ -108,7 +116,9 @@ export function DataTable<TData, TValue>({
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                   onClick={() => onRowClick?.(row.original)}
-                  className={onRowClick ? "cursor-pointer hover:bg-muted/50" : ""}
+                  className={
+                    onRowClick ? "cursor-pointer hover:bg-muted/50" : ""
+                  }
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>

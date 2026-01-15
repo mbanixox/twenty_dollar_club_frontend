@@ -1,5 +1,5 @@
 import { Socket, Channel } from "phoenix";
-import { User } from "../types";
+import { User } from "@/lib/types";
 
 const WEBSOCKET_URL = process.env.NEXT_PUBLIC_WEBSOCKET_URL || "ws://localhost:4000/socket";
 

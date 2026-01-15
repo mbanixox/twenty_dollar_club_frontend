@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { PaymentSocket } from "@/lib/socket/websocket";
+import { PaymentSocket } from "@/lib/socket/payment_socket";
 import { User } from "@/lib/types";
 
 interface UsePaymentSocketProps {
