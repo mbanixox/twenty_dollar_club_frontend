@@ -8,10 +8,14 @@ import { DataTable } from "@/components/tables/data-table";
 interface ContributionsTableProps {
   data: Contribution[];
   membershipIdToName: Record<string, string>;
+  membership_id?: string;
 }
 
-const ContributionsTable = ({ data, membershipIdToName }: ContributionsTableProps) => {
-
+const ContributionsTable = ({
+  data,
+  membershipIdToName,
+  membership_id,
+}: ContributionsTableProps) => {
   return (
     <DataTable
       columns={columns(membershipIdToName)}
@@ -20,14 +24,20 @@ const ContributionsTable = ({ data, membershipIdToName }: ContributionsTableProp
         <Input
           placeholder="Filter by reference..."
           value={
-            (table.getColumn("transaction_reference")?.getFilterValue() as string) ?? ""
+            (table
+              .getColumn("transaction_reference")
+              ?.getFilterValue() as string) ?? ""
           }
           onChange={(event) =>
-            table.getColumn("transaction_reference")?.setFilterValue(event.target.value)
+            table
+              .getColumn("transaction_reference")
+              ?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
       )}
+      reportType="contributions"
+      membership_id={membership_id}
     />
   );
 };
