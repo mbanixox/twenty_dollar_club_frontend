@@ -23,7 +23,7 @@ const ProjectsTable = ({
       data={data}
       renderFilter={(table) => (
         <Input
-          placeholder="Filter by name..."
+          placeholder="Filter by title..."
           value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
             table.getColumn("title")?.setFilterValue(event.target.value)

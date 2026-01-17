@@ -17,11 +17,9 @@ const MembershipsTable = ({ data, membership_id }: MembershipsTableProps) => {
       data={data}
       renderFilter={(table) => (
         <Input
-          placeholder="Filter by name..."
-          value={(table.getColumn("full_name")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("full_name")?.setFilterValue(event.target.value)
-          }
+          placeholder="Search..."
+          value={table.getState().globalFilter ?? ""}
+          onChange={(event) => table.setGlobalFilter(event.target.value)}
           className="max-w-sm"
         />
       )}

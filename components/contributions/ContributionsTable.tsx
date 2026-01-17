@@ -22,17 +22,9 @@ const ContributionsTable = ({
       data={data}
       renderFilter={(table) => (
         <Input
-          placeholder="Filter by reference..."
-          value={
-            (table
-              .getColumn("transaction_reference")
-              ?.getFilterValue() as string) ?? ""
-          }
-          onChange={(event) =>
-            table
-              .getColumn("transaction_reference")
-              ?.setFilterValue(event.target.value)
-          }
+          placeholder="Search..."
+          value={table.getState().globalFilter ?? ""}
+          onChange={(event) => table.setGlobalFilter(event.target.value)}
           className="max-w-sm"
         />
       )}
