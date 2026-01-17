@@ -14,6 +14,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getProjectById } from "@/lib/projects/actions";
 import PaymentDialog from "@/components/PaymentDialog";
+import { formatKSH } from "@/utils/format-currency";
 
 const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
   const session = await requireMembership();
@@ -30,10 +31,6 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
   const project = projectData.data;
   const progress = (project.funded_amount / project.goal_amount) * 100;
   const remainingAmount = project.goal_amount - project.funded_amount;
-
-  const formatKSH = (amount: number) => {
-    return `KSh ${amount.toLocaleString('en-KE')}`;
-  };
 
   return (
     <div className="container mx-auto py-10 px-6 max-w-4xl">

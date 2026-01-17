@@ -6,6 +6,7 @@ import { getMemberships } from "@/lib/memberships/actions";
 import { getBeneficiaries } from "@/lib/beneficiaries/actions";
 import { Users, Folder, Heart, DollarSign } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { formatKSH } from "@/utils/format-currency";
 
 const Page = async () => {
   const session = await requireMembership();
@@ -24,10 +25,6 @@ const Page = async () => {
     (sum: number, p: Project) => sum + Number(p.funded_amount || 0),
     0
   );
-
-  const formatKSH = (amount: number) => {
-    return `KSh ${amount.toLocaleString("en-KE")}`;
-  };
 
   return (
     <div className="container mx-auto py-10 px-6 max-w-6xl">

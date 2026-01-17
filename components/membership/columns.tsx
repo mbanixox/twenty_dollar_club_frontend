@@ -4,6 +4,7 @@ import { User } from "@/lib/types";
 import { capitalize } from "@/utils/string";
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Crown, User as UserIcon } from "lucide-react";
 import ActionsCell from "@/components/membership/ActionsCell";
 import { DataTableColumnHeader } from "@/components/tables/DataTableColumnHeader";
 
@@ -34,7 +35,11 @@ export const columns: ColumnDef<User>[] = [
   {
     id: "generated_id",
     header: () => <div>Generated ID</div>,
-    cell: ({ row }) => row.original.membership?.generated_id ?? "-",
+    cell: ({ row }) => (
+      <span className="font-mono text-sm font-medium">
+        {row.original.membership?.generated_id ?? "-"}
+      </span>
+    ),
     accessorFn: (row) => row.membership?.generated_id,
   },
   {
@@ -64,7 +69,27 @@ export const columns: ColumnDef<User>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Role" />
     ),
-    cell: ({ row }) => row.original.membership?.role,
+    cell: ({ row }) => {
+      const role = row.original.membership?.role;
+      const isAdmin = role === "admin";
+
+      return (
+        <span
+          className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-semibold ${
+            isAdmin
+              ? "bg-purple-100 text-purple-800 border-purple-200"
+              : "bg-slate-100 text-slate-800 border-slate-200"
+          }`}
+        >
+          {isAdmin ? (
+            <Crown className="h-3 w-3" />
+          ) : (
+            <UserIcon className="h-3 w-3" />
+          )}
+          {capitalize(role || "")}
+        </span>
+      );
+    },
     accessorFn: (row) => row.membership?.role,
   },
   {

@@ -16,14 +16,14 @@ const items = [
     icon: Users,
   },
   {
-    title: "Projects",
-    url: "/dashboard/projects",
-    icon: Folder,
-  },
-  {
     title: "Beneficiaries",
     url: "/dashboard/beneficiaries",
     icon: Heart,
+  },
+  {
+    title: "Projects",
+    url: "/dashboard/projects",
+    icon: Folder,
   },
   {
     title: "Contributions",

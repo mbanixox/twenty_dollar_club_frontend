@@ -21,6 +21,7 @@ import { getProjects } from "@/lib/projects/actions";
 import { Separator } from "@/components/ui/separator";
 import { getBeneficiaries } from "@/lib/beneficiaries/actions";
 import EditProfileDialog from "@/components/profile/EditProfileDialog";
+import { formatKSH } from "@/utils/format-currency";
 
 const Page = async () => {
   const session = await requireAuth();
@@ -37,10 +38,6 @@ const Page = async () => {
   const getInitials = () => {
     return `${user.first_name[0]}${user.last_name[0]}`.toUpperCase();
   };
-
-  const formatKSH = (amount: number) => {
-    return `KSH ${amount.toLocaleString('en-KE')}`;
-  }
 
   return (
     <div className="container mx-auto py-10 px-6 max-w-5xl">

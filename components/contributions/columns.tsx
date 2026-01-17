@@ -1,24 +1,15 @@
 "use client";
 
 import { Contribution } from "@/lib/types";
-import { MoreHorizontal } from "lucide-react";
 import { ColumnDef } from "@tanstack/react-table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
+import StatusBadge from "@/components/StatusBadge";
 import { Checkbox } from "@/components/ui/checkbox";
+import { formatKSH } from "@/utils/format-currency";
+import ActionsCell from "@/components/contributions/ActionsCell";
 import { DataTableColumnHeader } from "@/components/tables/DataTableColumnHeader";
-import { toast } from "sonner";
-import Link from "next/link";
 
 export const columns = (
-  membershipIdToName: Record<string, string>
+  membershipIdToName: Record<string, string>,
 ): ColumnDef<Contribution>[] => [
   {
     id: "select",
@@ -46,11 +37,19 @@ export const columns = (
   {
     accessorKey: "transaction_reference",
     header: () => <div>Reference</div>,
+    cell: ({ row }) => (
+      <span className="font-mono text-sm">
+        {row.original.transaction_reference || "-"}
+      </span>
+    ),
   },
   {
     accessorKey: "payment_method",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Payment Method" />
+    ),
+    cell: ({ row }) => (
+      <StatusBadge status={row.original.payment_method} variant="payment" />
     ),
   },
   {
@@ -58,16 +57,25 @@ export const columns = (
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Status" />
     ),
+    cell: ({ row }) => (
+      <StatusBadge status={row.original.status} variant="contribution" />
+    ),
   },
   {
     accessorKey: "amount",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Amount" />
     ),
+    cell: ({ row }) => {
+      const amount = row.original.amount;
+      return <span className="font-semibold">{formatKSH(amount)}</span>;
+    },
   },
   {
     accessorKey: "membership_id",
-    header: ({ column }) => <DataTableColumnHeader column={column} title="Name" />,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Name" />
+    ),
     cell: ({ row }) => {
       const membershipId = row.original.membership_id;
       const email = row.original.email;
@@ -91,6 +99,11 @@ export const columns = (
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Contribution Type" />
     ),
+    cell: ({ row }) => (
+      <span className="capitalize text-sm">
+        {row.original.contribution_type}
+      </span>
+    ),
   },
   {
     id: "actions",
@@ -98,45 +111,7 @@ export const columns = (
     cell: ({ row }) => {
       const contribution = row.original;
 
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>
-              <span className="font-extrabold">Actions</span>
-            </DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => {
-                if (contribution.id) {
-                  navigator.clipboard.writeText(contribution.id.toString());
-                  toast.success("Contribution ID copied to clipboard");
-                } else {
-                  toast.error("No Contribution ID found");
-                }
-              }}
-            >
-              Copy Contribution ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View contribution details</DropdownMenuItem>
-            {contribution.project_id && (
-              <Link href={`/dashboard/projects/${contribution.project_id}`}>
-                <DropdownMenuItem>View associated project details</DropdownMenuItem>
-              </Link>
-            )}
-            {contribution.membership_id && (
-              <Link href={`/dashboard/memberships/${contribution.membership_id}`}>
-                <DropdownMenuItem>View associated member details</DropdownMenuItem>
-              </Link>
-            )}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
+      return <ActionsCell contribution={contribution} />;
     },
   },
 ];
