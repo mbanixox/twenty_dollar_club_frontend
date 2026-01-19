@@ -1,15 +1,18 @@
-import { Badge } from "@/components/ui/badge";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Membership, User } from "@/lib/types";
 import { capitalize } from "@/utils/string";
+import { Badge } from "@/components/ui/badge";
+import { Membership, User } from "@/lib/types";
+import { Separator } from "@/components/ui/separator";
+import EditProfileDialog from "@/components/profile/EditProfileDialog";
 import { Users, UserIcon, Mail, Phone, Calendar, Crown } from "lucide-react";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
 interface MemberProfileProps {
   user: User;
-  membership: Membership;
+  membership?: Membership;
+  editable?: boolean;
 }
 
-const MemberProfile = ({ user, membership }: MemberProfileProps) => {
+const MemberProfile = ({ user, membership, editable = false }: MemberProfileProps) => {
   const getInitials = () => {
     return `${user.first_name[0]}${user.last_name[0]}`.toUpperCase();
   };
@@ -50,9 +53,16 @@ const MemberProfile = ({ user, membership }: MemberProfileProps) => {
             Member ID: #{membership.generated_id}
           </p>
         )}
+        {editable && (
+          <div className="mt-4">
+            <EditProfileDialog user={user} />
+          </div>
+        )}
       </div>
 
-      <Card>
+      <Separator className="mb-8" />
+
+      <Card className="mb-6">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <UserIcon className="h-5 w-5" />
