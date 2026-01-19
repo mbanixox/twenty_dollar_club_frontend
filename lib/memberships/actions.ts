@@ -19,7 +19,7 @@ export const getMemberships = async () => {
     if (!res.ok) {
       const errorText = await res.text();
       throw new Error(
-        `Failed to fetch memberships: ${res.status} ${errorText}`
+        `Failed to fetch memberships: ${res.status} ${errorText}`,
       );
     }
 
@@ -46,7 +46,7 @@ export const getMembershipById = async (id: string) => {
     if (!res.ok) {
       const errorText = await res.text();
       throw new Error(
-        `Failed to fetch membership by ID: ${res.status} ${errorText}`
+        `Failed to fetch membership by ID: ${res.status} ${errorText}`,
       );
     }
 
@@ -56,7 +56,7 @@ export const getMembershipById = async (id: string) => {
     console.error("Error fetching membership by ID:", error);
     throw error;
   }
-}
+};
 
 export const getUsersWithMemberships = async () => {
   try {
@@ -73,7 +73,7 @@ export const getUsersWithMemberships = async () => {
     if (!res.ok) {
       const errorText = await res.text();
       throw new Error(
-        `Failed to fetch users with memberships: ${res.status} ${errorText}`
+        `Failed to fetch users with memberships: ${res.status} ${errorText}`,
       );
     }
 
@@ -81,6 +81,34 @@ export const getUsersWithMemberships = async () => {
     return data;
   } catch (error) {
     console.error("Error fetching users with memberships:", error);
+    throw error;
+  }
+};
+
+export const updateMembershipRole = async (id: string | undefined, role: string) => {
+  try {
+    const token = await getAuthToken();
+
+    const res = await fetch(`${base_url}/admin/memberships/update/${id}`, {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ membership: { role } }),
+    });
+
+    if (!res.ok) {
+      const errorText = await res.text();
+      throw new Error(
+        `Failed to update membership role: ${res.status} ${errorText}`,
+      );
+    }
+
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.error("Error updating membership role:", error);
     throw error;
   }
 };

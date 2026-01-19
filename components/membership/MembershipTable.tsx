@@ -8,12 +8,13 @@ import { DataTable } from "@/components/tables/data-table";
 interface MembershipsTableProps {
   data: User[];
   membership_id?: string;
+  isAdmin?: boolean;
 }
 
-const MembershipsTable = ({ data, membership_id }: MembershipsTableProps) => {
+const MembershipsTable = ({ data, membership_id, isAdmin }: MembershipsTableProps) => {
   return (
     <DataTable
-      columns={columns}
+      columns={columns(isAdmin)}
       data={data}
       renderFilter={(table) => (
         <Input

@@ -15,7 +15,7 @@ export type Session = {
 
 export type Membership = {
   id: string;
-  role: "member" | "admin";
+  role: "member" | "admin" | "super_admin";
   generated_id: number;
   beneficiaries?: Beneficiary[];
   projects?: Project[];

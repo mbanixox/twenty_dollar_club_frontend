@@ -24,6 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Crown } from "lucide-react";
 
 interface EditProjectDialogProps {
   project: Project;
@@ -40,7 +41,7 @@ const EditProjectDialog = ({
   const [description, setDescription] = React.useState(project.description);
   const [status, setStatus] = React.useState(project.status);
   const [goal_amount, setGoalAmount] = React.useState(
-    project.goal_amount.toString()
+    project.goal_amount.toString(),
   );
   const [isLoading, setIsLoading] = React.useState(false);
   const [error, setError] = React.useState("");
@@ -83,7 +84,19 @@ const EditProjectDialog = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="p-6 rounded-lg shadow-lg">
         <DialogHeader>
-          <DialogTitle className="text-center">Edit Project</DialogTitle>
+          <DialogTitle>
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-lg font-semibold">Edit project</span>
+              <span
+                className="inline-flex items-center gap-1.5 rounded-full 
+              border px-2.5 py-0.5 text-xs font-semibold mr-3
+              bg-purple-100 text-purple-800 border-purple-200"
+              >
+                <Crown className="h-3 w-3" />
+                admin
+              </span>
+            </div>
+          </DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleEditProject} className="mt-4 space-y-4">

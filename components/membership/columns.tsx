@@ -8,7 +8,7 @@ import { Crown, User as UserIcon } from "lucide-react";
 import ActionsCell from "@/components/membership/ActionsCell";
 import { DataTableColumnHeader } from "@/components/tables/DataTableColumnHeader";
 
-export const columns: ColumnDef<User>[] = [
+export const columns = (isAdmin?: boolean): ColumnDef<User>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -98,7 +98,7 @@ export const columns: ColumnDef<User>[] = [
     cell: ({ row }) => {
       const user = row.original;
 
-      return <ActionsCell user={user} />;
+      return <ActionsCell user={user} isAdmin={isAdmin} />;
     },
   },
 ];

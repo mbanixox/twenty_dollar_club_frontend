@@ -19,7 +19,7 @@ export const getSession = async (): Promise<Session | null> => {
   } catch {
     return null;
   }
-}
+};
 
 export const requireAuth = async (): Promise<Session> => {
   const session = await getSession();
@@ -29,7 +29,7 @@ export const requireAuth = async (): Promise<Session> => {
   }
 
   return session;
-}
+};
 
 export const requireMembership = async (): Promise<Session> => {
   const session = await requireAuth();
@@ -39,7 +39,7 @@ export const requireMembership = async (): Promise<Session> => {
   }
 
   return session;
-}
+};
 
 export const requireAdmin = async (): Promise<Session> => {
   const session = await requireAuth();
@@ -49,14 +49,17 @@ export const requireAdmin = async (): Promise<Session> => {
   }
 
   return session;
-}
+};
 
 export const isAdmin = async (): Promise<boolean> => {
   const session = await getSession();
-  return session?.user.membership?.role === "admin";
-}
+  return (
+    session?.user.membership?.role === "admin" ||
+    session?.user.membership?.role === "super_admin"
+  );
+};
 
 export const hasMembership = async (): Promise<boolean> => {
   const session = await getSession();
   return !!session?.user.membership;
-}
+};
