@@ -1,8 +1,6 @@
-import Link from "next/link";
 import { User } from "@/lib/types";
-import { ArrowLeft } from "lucide-react";
 import { notFound } from "next/navigation";
-import { Button } from "@/components/ui/button";
+import BackButton from "@/components/BackButton";
 import { requireMembership } from "@/lib/auth/session";
 import { getProjectById } from "@/lib/projects/actions";
 import ProjectOverview from "@/sections/ProjectOverview";
@@ -42,12 +40,7 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
 
   return (
     <div className="container mx-auto py-10 px-6 max-w-4xl">
-      <Link href="/dashboard/projects">
-        <Button variant="ghost" className="mb-6">
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Projects
-        </Button>
-      </Link>
+      <BackButton />
 
       <ProjectOverview project={project} user={user} />
 

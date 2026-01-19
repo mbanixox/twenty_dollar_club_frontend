@@ -2,10 +2,8 @@ import {
   getMembershipById,
   getUsersWithMemberships,
 } from "@/lib/memberships/actions";
-import Link from "next/link";
 import { User } from "@/lib/types";
-import { ArrowLeft } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import BackButton from "@/components/BackButton";
 import MemberProfile from "@/sections/MemberProfile";
 import { requireMembership } from "@/lib/auth/session";
 import MemberContributions from "@/sections/MemberContributions";
@@ -40,12 +38,7 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
 
   return (
     <div className="container mx-auto py-10 px-6 max-w-4xl">
-      <Link href="/dashboard/members">
-        <Button variant="ghost" className="mb-6">
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Members
-        </Button>
-      </Link>
+      <BackButton />
 
       <MemberProfile user={user} membership={membership} />
 
