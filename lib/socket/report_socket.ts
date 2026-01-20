@@ -6,26 +6,50 @@ const WEBSOCKET_URL =
 export class ReportSocket {
   private socket: Socket;
   private channel: Channel | null = null;
+  private connectionPromise: Promise<void> | null = null;
 
   constructor() {
     this.socket = new Socket(WEBSOCKET_URL, {
       params: {},
       reconnectAfterMs: (tries) => {
-        if (tries > 4) return 10000;
-        return [1000, 2000, 5000, 10000][tries - 1] || 10000;
+        return [100, 500, 1000, 2000, 5000][tries - 1] || 5000;
       },
+      timeout: 5000,
       logger: (kind, msg, data) => {
         console.log(`${kind}: ${msg}`, data);
       },
     });
   }
 
-  connect() {
+  connect(): Promise<void> {
     if (this.socket.isConnected()) {
       console.log("Socket already connected");
-      return;
+      return Promise.resolve();
     }
-    this.socket.connect();
+
+    if (this.connectionPromise) {
+      return this.connectionPromise;
+    }
+
+    this.connectionPromise = new Promise((resolve) => {
+      this.socket.connect();
+
+      const checkConnection = setInterval(() => {
+        if (this.socket.isConnected()) {
+          clearInterval(checkConnection);
+          this.connectionPromise = null;
+          resolve();
+        }
+      }, 50);
+
+      setTimeout(() => {
+        clearInterval(checkConnection);
+        this.connectionPromise = null;
+        resolve();
+      }, 3000);
+    });
+
+    return this.connectionPromise;
   }
 
   disconnect() {
@@ -42,8 +66,8 @@ export class ReportSocket {
     return this.socket.isConnected();
   }
 
-  joinReportChannel(
-    userId: string,
+  async joinReportChannel(
+    membershipId: string,
     callbacks: {
       onReportReady?: (payload: {
         report_type: string;
@@ -52,13 +76,18 @@ export class ReportSocket {
       }) => void;
       onError?: (payload: { message: string }) => void;
     }
-  ) {
+  ): Promise<Channel | null> {
+    // Ensure socket is connected before joining
+    await this.connect();
+
     if (this.channel) {
       console.log("Already in a report channel");
       return this.channel;
     }
 
-    this.channel = this.socket.channel(`report:${userId}`, {});
+    this.channel = this.socket.channel(`report:${membershipId}`, {
+      timeout: 5000,
+    });
 
     if (callbacks.onReportReady) {
       this.channel.on("report_ready", (payload) => {
@@ -103,7 +132,7 @@ export class ReportSocket {
       }
 
       this.channel
-        .push("generate_report", { report_type: reportType })
+        .push("generate_report", { report_type: reportType }, 5000)
         .receive("ok", (response) => {
           console.log("Report generation started:", response);
           resolve(response);
