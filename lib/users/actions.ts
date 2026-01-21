@@ -39,8 +39,9 @@ export const updateUserProfile = async (
       const cookieStore = await cookies();
       cookieStore.set("user_data", JSON.stringify(data.data), {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        secure: false, // TODO: Change this to true for production (HTTPS)
+        sameSite: "lax",
+        // sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
         maxAge: 60 * 60 * 24 * 7,
       });
     }

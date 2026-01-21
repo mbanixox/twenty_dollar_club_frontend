@@ -5,11 +5,11 @@ import { User } from "@/lib/types";
 import { revalidatePath } from "next/cache";
 
 const base_url = process.env.BACKEND_URL;
-const isProduction = process.env.NODE_ENV === "production";
+// const isProduction = process.env.NODE_ENV === "production";
 
 export const signInWithCredentials = async (
   email: string,
-  hashed_password: string
+  hashed_password: string,
 ) => {
   const res = await fetch(`${base_url}/users/sign_in`, {
     method: "POST",
@@ -30,15 +30,17 @@ export const signInWithCredentials = async (
   const cookieStore = await cookies();
   cookieStore.set("auth_token", token, {
     httpOnly: true,
-    secure: isProduction,
-    sameSite: isProduction ? "none" : "lax",
+    secure: false, // TODO: Change this to true for production (HTTPS)
+    sameSite: "lax",
+    // sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     maxAge: 60 * 60 * 24 * 7, // 7 days
   });
 
   cookieStore.set("user_data", JSON.stringify(user), {
     httpOnly: true,
-    secure: isProduction,
-    sameSite: isProduction ? "none" : "lax",
+    secure: false, // TODO: Change this to true for production (HTTPS)
+    sameSite: "lax",
+    // sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     maxAge: 60 * 60 * 24 * 7,
   });
 
@@ -75,15 +77,17 @@ export const registerUser = async (formData: FormData) => {
   const cookieStore = await cookies();
   cookieStore.set("auth_token", token, {
     httpOnly: true,
-    secure: isProduction,
-    sameSite: isProduction ? "none" : "lax",
+    secure: false, // TODO: Change this to true for production (HTTPS)
+    sameSite: "lax",
+    // sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     maxAge: 60 * 60 * 24 * 7, // 7 days
   });
 
   cookieStore.set("user_data", JSON.stringify(user), {
     httpOnly: true,
-    secure: isProduction,
-    sameSite: isProduction ? "none" : "lax",
+    secure: false, // TODO: Change this to true for production (HTTPS)
+    sameSite: "lax",
+    // sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     maxAge: 60 * 60 * 24 * 7,
   });
 
@@ -129,16 +133,18 @@ export const updateSession = async (token: string, user: User) => {
 
     cookieStore.set("auth_token", token, {
       httpOnly: true,
-      secure: isProduction,
-      sameSite: isProduction ? "none" : "lax",
+      secure: false, // TODO: Change this to true for production (HTTPS)
+      sameSite: "lax",
+      // sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       maxAge: 60 * 60 * 24 * 7, // 7 days
       path: "/",
     });
 
     cookieStore.set("user_data", JSON.stringify(user), {
       httpOnly: true,
-      secure: isProduction,
-      sameSite: isProduction ? "none" : "lax",
+      secure: false, // TODO: Change this to true for production (HTTPS)
+      sameSite: "lax",
+      // sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       maxAge: 60 * 60 * 24 * 7,
       path: "/",
     });
