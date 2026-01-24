@@ -7,8 +7,15 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import React from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { toast } from "sonner";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,11 +23,11 @@ import { Button } from "@/components/ui/button";
 import { createBeneficiary } from "@/lib/beneficiaries/actions";
 
 const CreateBeneficiaryDialog = () => {
-  const [beneficiary_name, setBeneficiaryName] = React.useState("");
-  const [relationship, setRelationship] = React.useState("");
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [error, setError] = React.useState("");
-  const [open, setOpen] = React.useState(false);
+  const [beneficiary_name, setBeneficiaryName] = useState("");
+  const [relationship, setRelationship] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [open, setOpen] = useState(false);
 
   const router = useRouter();
 
@@ -74,13 +81,23 @@ const CreateBeneficiaryDialog = () => {
             <Label htmlFor="relationship" className="text-base">
               Relationship
             </Label>
-            <Input
-              id="relationship"
-              type="text"
+            <Select
               value={relationship}
-              onChange={(e) => setRelationship(e.target.value)}
+              onValueChange={(value) => setRelationship(value)}
               required
-            />
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select relationship" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="spouse">Spouse</SelectItem>
+                <SelectItem value="child">Child</SelectItem>
+                <SelectItem value="parent">Parent</SelectItem>
+                <SelectItem value="sibling">Sibling</SelectItem>
+                <SelectItem value="friend">Friend</SelectItem>
+                <SelectItem value="relative">Relative</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           <Button

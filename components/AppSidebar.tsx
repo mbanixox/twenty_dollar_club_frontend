@@ -11,6 +11,7 @@ import { capitalize } from "@/utils/string";
 import { Badge } from "@/components/ui/badge";
 import { getSession } from "@/lib/auth/session";
 import SidebarMenuWrapper from "@/components/SidebarMenuWrapper";
+import { Separator } from "./ui/separator";
 
 export async function AppSidebar() {
   const session = await getSession();
@@ -33,6 +34,7 @@ export async function AppSidebar() {
 
       <SidebarContent className="px-2 py-4">
         <SidebarMenuWrapper />
+        <Separator />
       </SidebarContent>
 
       <SidebarFooter className="border-t mt-auto">

@@ -25,7 +25,7 @@ export type Membership = {
 export type Beneficiary = {
   id: string;
   beneficiary_name: string;
-  relationship: string;
+  relationship: "spouse" | "child" | "parent" | "sibling" | "friend" | "relative";
 };
 
 export type Project = {
@@ -47,7 +47,7 @@ export type Contribution = {
   description: string;
   phone_number?: string;
   email?: string;
-  contribution_type: string;
+  contribution_type: "Membership" | "Project";
   membership_id?: string;
   project_id?: string;
 };

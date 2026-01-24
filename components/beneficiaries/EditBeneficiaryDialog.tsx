@@ -6,6 +6,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 import React from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -45,7 +52,7 @@ const EditBeneficiaryDialog = ({
       const result = await updateBeneficiary(
         beneficiaryID,
         beneficiary_name,
-        relationship
+        relationship,
       );
       if (result) {
         toast.success("Beneficiary updated successfully");
@@ -85,13 +92,23 @@ const EditBeneficiaryDialog = ({
             <Label htmlFor="relationship" className="text-base">
               Relationship
             </Label>
-            <Input
-              id="relationship"
-              type="text"
+            <Select
               value={relationship}
-              onChange={(e) => setRelationship(e.target.value)}
+              onValueChange={(value) => setRelationship(value)}
               required
-            />
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select relationship" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="spouse">Spouse</SelectItem>
+                <SelectItem value="child">Child</SelectItem>
+                <SelectItem value="parent">Parent</SelectItem>
+                <SelectItem value="sibling">Sibling</SelectItem>
+                <SelectItem value="friend">Friend</SelectItem>
+                <SelectItem value="relative">Relative</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           <Button
