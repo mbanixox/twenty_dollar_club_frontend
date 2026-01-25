@@ -1,7 +1,6 @@
-import { signOut } from "@/lib/auth/actions";
 import { LogOut } from "lucide-react";
 import { redirect } from "next/navigation";
-import { Button } from "@/components/ui/button";
+import { signOut } from "@/lib/auth/actions";
 
 const SignOut = () => {
   return (
@@ -12,17 +11,11 @@ const SignOut = () => {
         await signOut();
         redirect("/");
       }}
-      className="ml-auto"
     >
-      <Button
-        variant="destructive"
-        size="sm"
-        aria-label="Sign Out"
-        type="submit"
-      >
-        <LogOut className="mr-2 h-4 w-4" />
-        Sign Out
-      </Button>
+      <button aria-label="Sign Out" type="submit" className="flex items-center">
+        <LogOut className="mr-3 h-4 w-4 text-red-600" />
+        <span className="text-red-600">Sign Out</span>
+      </button>
     </form>
   );
 };

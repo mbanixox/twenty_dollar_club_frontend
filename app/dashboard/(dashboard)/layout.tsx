@@ -1,5 +1,6 @@
 import { AppSidebar } from "@/components/AppSidebar";
-import SignOut from "@/components/SignOut";
+import AvatarWrapper from "@/components/AvatarWrapper";
+
 import {
   SidebarInset,
   SidebarProvider,
@@ -13,8 +14,8 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
           <SidebarTrigger />
-
-          <SignOut />
+          <div className="flex-1"/>
+          <AvatarWrapper />
         </header>
         <div className="flex flex-1 flex-col">{children}</div>
       </SidebarInset>
