@@ -10,8 +10,9 @@ import { Users } from "lucide-react";
 import { capitalize } from "@/utils/string";
 import { Badge } from "@/components/ui/badge";
 import { getSession } from "@/lib/auth/session";
-import SidebarMenuWrapper from "@/components/SidebarMenuWrapper";
 import { Separator } from "./ui/separator";
+import PrimarySidebarMenu from "@/components/PrimarySidebarMenu";
+import AdminSidebarMenu from "./AdminSidebarMenu";
 
 export async function AppSidebar() {
   const session = await getSession();
@@ -33,8 +34,10 @@ export async function AppSidebar() {
       </SidebarHeader>
 
       <SidebarContent className="px-2 py-4">
-        <SidebarMenuWrapper />
-        <Separator />
+        <PrimarySidebarMenu />
+        <Separator className="my-3"/>
+        <AdminSidebarMenu />
+
       </SidebarContent>
 
       <SidebarFooter className="border-t mt-auto">

@@ -32,7 +32,7 @@ const items = [
   },
 ];
 
-const SidebarMenuWrapper = () => {
+const PrimarySidebarMenu = () => {
   const pathname = usePathname();
 
   return (
@@ -66,4 +66,4 @@ const SidebarMenuWrapper = () => {
   );
 };
 
-export default SidebarMenuWrapper;
+export default PrimarySidebarMenu;

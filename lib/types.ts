@@ -5,6 +5,7 @@ export type User = {
   last_name: string;
   phone_number: string;
   gender: string;
+  inserted_at?: string;
   membership_status: "active" | "inactive" | "pending" | "approved" | "rejected";
   membership?: Membership;
 };

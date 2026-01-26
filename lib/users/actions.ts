@@ -75,3 +75,27 @@ export const getMembershipStatus = async (user_id: string) => {
     throw error;
   }
 }
+
+export const getPendingUsers = async () => {
+  try {
+    const token = await getAuthToken();
+
+    const res = await fetch(`${base_url}/admin/users/pending`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    if (!res.ok) {
+      const errorText = await res.text();
+      throw new Error(`Failed to fetch pending users: ${res.status} ${errorText}`);
+    }
+
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching pending users:", error);
+    throw error;
+  }
+}
