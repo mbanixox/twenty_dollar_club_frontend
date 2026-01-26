@@ -3,17 +3,21 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { registerUser } from "@/lib/auth/actions";
-import { Check, ArrowRight, ArrowLeft, User, FileText, CreditCard } from "lucide-react";
+import { Check, ArrowRight, ArrowLeft, User, FileText, CreditCard, Clock } from "lucide-react";
 import CreateAccount from "@/components/registration/CreateAccount";
 import TermsConditions from "@/components/TermsConditions";
 import MpesaPaymentStep from "@/components/registration/MpesaPayment";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import AwaitingApprovalStep from "../AwaitingApprovalStep";
+import { getMembershipStatus } from "@/lib/users/actions";
+import { getSession } from "@/lib/auth/session";
 
 const steps = [
 	{ id: 1, name: "Create Account", icon: User },
 	{ id: 2, name: "Terms & Conditions", icon: FileText },
-	{ id: 3, name: "Payment", icon: CreditCard },
+	{ id: 3, name: "Awaiting Approval", icon: Clock },
+	{ id: 4, name: "Payment", icon: CreditCard },
 ];
 
 const RegisterForm = () => {
@@ -23,6 +27,7 @@ const RegisterForm = () => {
 	const [showPassword, setShowPassword] = useState(false);
 	const [acceptedTerms, setAcceptedTerms] = useState(false);
 	const [, setCredentialsSubmitted] = useState(false);
+	const [applicationStatus, setApplicationStatus] = useState<"pending" | "approved" | "rejected">("pending");
 	const [isSubmittingStep1, setIsSubmittingStep1] = useState(false);
 
 	const [formData, setFormData] = useState({
@@ -44,7 +49,7 @@ const RegisterForm = () => {
 	};
 
 	const handleNext = () => {
-		if (currentStep < 3) setCurrentStep(currentStep + 1);
+		if (currentStep < 4) setCurrentStep(currentStep + 1);
 	};
 
 	const handleStep1Submit = async () => {
@@ -71,6 +76,18 @@ const RegisterForm = () => {
 			});
 		} finally {
 			setIsSubmittingStep1(false);
+		}
+	};
+
+	const handleCheckApprovalStatus = async () => {
+		const session = await getSession();
+		const user = session?.user;
+
+		const statusData = await getMembershipStatus(user?.id || "");
+		const status = statusData?.membership_status;
+
+		if (status === "approved" || status === "rejected" || status === "pending") {
+			setApplicationStatus(status);
 		}
 	};
 
@@ -101,6 +118,9 @@ const RegisterForm = () => {
 			return acceptedTerms;
 		}
 		if (currentStep === 3) {
+			return applicationStatus === "approved";
+		}
+		if (currentStep === 4) {
 			return formData.mpesa_phone && formData.mpesa_phone.length >= 12;
 		}
 		return false;
@@ -174,6 +194,13 @@ const RegisterForm = () => {
 			)}
 
 			{currentStep === 3 && (
+				<AwaitingApprovalStep
+					applicationStatus={applicationStatus}
+					onCheckStatus={handleCheckApprovalStatus}
+				/>
+			)}
+
+			{currentStep === 4 && (
 				<MpesaPaymentStep
 					phoneNumber={formData.mpesa_phone}
 					userEmail={formData.email}
@@ -195,7 +222,7 @@ const RegisterForm = () => {
 					Back
 				</Button>
 
-				{currentStep < 3 && (
+				{currentStep < 4 && (
 					<Button
 						type="button"
 						onClick={currentStep === 1 ? handleStep1Submit : handleNext}

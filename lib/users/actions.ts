@@ -2,7 +2,7 @@
 
 import { getAuthToken } from "@/lib/auth/actions";
 import { cookies } from "next/headers";
-import { User } from "../types";
+import { User } from "@/lib/types";
 
 const base_url = process.env.BACKEND_URL;
 
@@ -34,7 +34,6 @@ export const updateUserProfile = async (
 
     const data = await res.json();
 
-    // Update user_data cookie with new information
     if (data.data) {
       const cookieStore = await cookies();
       cookieStore.set("user_data", JSON.stringify(data.data), {
@@ -52,3 +51,27 @@ export const updateUserProfile = async (
     throw error;
   }
 };
+
+export const getMembershipStatus = async (user_id: string) => {
+  try {
+    const token = await getAuthToken();
+
+    const res = await fetch(`${base_url}/users/membership_status/${user_id}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    if (!res.ok) {
+      const errorText = await res.text();
+      throw new Error(`Failed to fetch membership status: ${res.status} ${errorText}`);
+    }
+
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching membership status:", error);
+    throw error;
+  }
+}

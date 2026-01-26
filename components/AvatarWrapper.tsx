@@ -19,7 +19,7 @@ const AvatarWrapper = async () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
-        <div className="ml-auto flex items-center gap-2 cursor-pointer">
+        <div className="ml-auto flex items-center gap-2 cursor-pointer p-1">
           <Avatar>
             <AvatarFallback>
               <User className="h-4 w-4" />
