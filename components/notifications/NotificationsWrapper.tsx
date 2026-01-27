@@ -4,12 +4,21 @@ import { getPendingUsers } from "@/lib/users/actions";
 import AdminNotifications from "@/components/notifications/AdminNotifications";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import GeneralNotifications from "@/components/notifications/GeneralNotifications";
+import { getNotifications } from "@/lib/notifications/actions";
 
 const NotificationsWrapper = async ({ isAdmin }: { isAdmin: boolean }) => {
-  const pendingUserData = await getPendingUsers();
-  const pendingUsers = pendingUserData.data;
+  const [pendingUserData, notificationData] = await Promise.all([
+    getPendingUsers(),
+    getNotifications(),
+  ]);
 
+  const pendingUsers = pendingUserData.data;
   const pendingUsersCount = pendingUsers.length;
+
+  const notifications = notificationData.data;
+  const unreadCount = notifications.filter(
+    (notification: { read: boolean }) => !notification.read
+  ).length;
 
   return (
     <div className="container mx-auto py-8">
@@ -22,14 +31,14 @@ const NotificationsWrapper = async ({ isAdmin }: { isAdmin: boolean }) => {
             <TabsTrigger value="general" className="gap-2">
               <Bell className="w-4 h-4" />
               General
-              {/* {unreadCount > 0 && (
+              {unreadCount > 0 && (
                 <Badge
                   variant="secondary"
                   className="ml-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs"
                 >
                   {unreadCount}
                 </Badge>
-              )} */}
+              )}
             </TabsTrigger>
             {isAdmin && (
               <TabsTrigger value="admin" className="gap-2">
@@ -48,7 +57,7 @@ const NotificationsWrapper = async ({ isAdmin }: { isAdmin: boolean }) => {
           </TabsList>
 
           <TabsContent value="general" className="mt-6">
-            <GeneralNotifications />
+            <GeneralNotifications notifications={notifications} />
           </TabsContent>
 
           {isAdmin && (
