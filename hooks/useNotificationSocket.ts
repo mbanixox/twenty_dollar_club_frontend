@@ -18,9 +18,7 @@ export const useNotificationSocket = ({
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
-    if (!membershipId || !enabled) {
-      return;
-    }
+    if (!membershipId || !enabled) return;
 
     const socket = getNotificationSocket();
     socket.connect();
@@ -35,7 +33,8 @@ export const useNotificationSocket = ({
       onError: () => setIsConnected(false),
     });
 
-    if (channel) {
+    // Only call join() if the channel is not already joined
+    if (channel && (!channel.state || channel.state === "closed")) {
       channel
         .join()
         .receive("ok", () => {
