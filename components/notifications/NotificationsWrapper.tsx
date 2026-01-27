@@ -6,7 +6,15 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import GeneralNotifications from "@/components/notifications/GeneralNotifications";
 import { getNotifications } from "@/lib/notifications/actions";
 
-const NotificationsWrapper = async ({ isAdmin }: { isAdmin: boolean }) => {
+interface NotificationsWrapperProps {
+  isAdmin: boolean;
+  membershipId: string;
+}
+
+const NotificationsWrapper = async ({
+  isAdmin,
+  membershipId,
+}: NotificationsWrapperProps) => {
   const [pendingUserData, notificationData] = await Promise.all([
     getPendingUsers(),
     getNotifications(),
@@ -17,7 +25,7 @@ const NotificationsWrapper = async ({ isAdmin }: { isAdmin: boolean }) => {
 
   const notifications = notificationData.data;
   const unreadCount = notifications.filter(
-    (notification: { read: boolean }) => !notification.read
+    (notification: { read: boolean }) => !notification.read,
   ).length;
 
   return (
@@ -57,7 +65,10 @@ const NotificationsWrapper = async ({ isAdmin }: { isAdmin: boolean }) => {
           </TabsList>
 
           <TabsContent value="general" className="mt-6">
-            <GeneralNotifications notifications={notifications} />
+            <GeneralNotifications
+              notifications={notifications}
+              membershipId={membershipId}
+            />
           </TabsContent>
 
           {isAdmin && (

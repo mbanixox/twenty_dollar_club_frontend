@@ -1,9 +1,13 @@
-
-import { isAdmin } from "@/lib/auth/session";
+import { isAdmin, requireMembership } from "@/lib/auth/session";
 import NotificationsWrapper from "@/components/notifications/NotificationsWrapper";
 
 const Page = async () => {
-  const isAdminUser = await isAdmin();
+  const [isAdminUser, session] = await Promise.all([
+    isAdmin(),
+    requireMembership(),
+  ]);
+  
+  const membershipId = session.user.membership!.id;
 
   return (
     <div className="container mx-auto py-10">
@@ -12,7 +16,7 @@ const Page = async () => {
         Stay updated with your latest notifications
       </p>
 
-      <NotificationsWrapper isAdmin={isAdminUser} />
+      <NotificationsWrapper isAdmin={isAdminUser} membershipId={membershipId} />
     </div>
   );
 };

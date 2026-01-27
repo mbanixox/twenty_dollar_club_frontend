@@ -18,16 +18,26 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { markRead, markUnread } from "@/lib/notifications/actions";
+import { useNotificationSocket } from "@/hooks/useNotificationSocket";
 
 const GeneralNotifications = ({
   notifications,
+  membershipId,
 }: {
   notifications: Notification[];
+  membershipId: string;
 }) => {
   const [notificationList, setNotificationList] = useState(notifications);
   const [, setNow] = useState(0);
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
+
+  useNotificationSocket({
+    membershipId,
+    onNewNotification: (notification) => {
+      setNotificationList((prev) => [notification, ...prev]);
+    },
+  });
 
   type ResourceType = "project" | "membership" | "contribution" | "beneficiary";
   type TitleType =
@@ -214,9 +224,6 @@ const GeneralNotifications = ({
                   <span className="font-medium text-sm">
                     {getResourceLabel(resourceType as ResourceType)}
                   </span>
-                  <Badge variant="secondary" className="h-5 px-2 text-xs">
-                    {notifications.length}
-                  </Badge>
                   {unreadCount > 0 && (
                     <Badge variant="default" className="h-5 px-2 text-xs">
                       {unreadCount} new

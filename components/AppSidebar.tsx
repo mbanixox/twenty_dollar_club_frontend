@@ -12,11 +12,12 @@ import { Badge } from "@/components/ui/badge";
 import { getSession } from "@/lib/auth/session";
 import { Separator } from "./ui/separator";
 import PrimarySidebarMenu from "@/components/PrimarySidebarMenu";
-import AdminSidebarMenu from "./AdminSidebarMenu";
+import SecondarySidebarMenu from "@/components/SecondarySidebarMenu";
 
 export async function AppSidebar() {
   const session = await getSession();
   const user = session?.user;
+  const membershipId = user?.membership?.id || null;
 
   return (
     <Sidebar collapsible="icon">
@@ -36,7 +37,7 @@ export async function AppSidebar() {
       <SidebarContent className="px-2 py-4">
         <PrimarySidebarMenu />
         <Separator className="my-3"/>
-        <AdminSidebarMenu />
+        <SecondarySidebarMenu membershipId={membershipId}/>
 
       </SidebarContent>
 
