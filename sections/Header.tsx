@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { signOut } from "@/lib/auth/actions";
 import { getSession } from "@/lib/auth/session";
 import { Button } from "@/components/ui/button";
 import SignInDialog from "@/components/SignInDialog";
+import AvatarWrapper from "@/components/AvatarWrapper";
 
 const Header = async () => {
   const session = await getSession();
@@ -26,14 +26,7 @@ const Header = async () => {
                   Dashboard
                 </Button>
               </Link>
-              <form
-                action={async () => {
-                  "use server";
-                  await signOut();
-                }}
-              >
-                <Button size="sm">Sign Out</Button>
-              </form>
+              <AvatarWrapper />
             </>
           ) : (
             <>

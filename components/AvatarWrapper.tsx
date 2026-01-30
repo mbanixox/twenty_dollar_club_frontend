@@ -15,6 +15,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 const AvatarWrapper = async () => {
   const session = await getSession();
   const user = session?.user;
+  const isMember = !!user?.membership;
 
   return (
     <DropdownMenu>
@@ -33,7 +34,11 @@ const AvatarWrapper = async () => {
       <DropdownMenuContent>
         <DropdownMenuItem>
           <User className="mr-1 h-4 w-4" />
-          <Link href="/dashboard/profile">Profile</Link>
+          {isMember ? (
+            <Link href="/dashboard/profile">Profile</Link>
+          ) : (
+            <Link href="/profile">Profile</Link>
+          )}
         </DropdownMenuItem>
         <Separator className="my-1" />
         <DropdownMenuItem className="hover:bg-red-100 focus:bg-red-100">

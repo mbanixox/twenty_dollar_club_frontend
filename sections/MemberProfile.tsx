@@ -12,7 +12,11 @@ interface MemberProfileProps {
   editable?: boolean;
 }
 
-const MemberProfile = ({ user, membership, editable = false }: MemberProfileProps) => {
+const MemberProfile = ({
+  user,
+  membership,
+  editable = false,
+}: MemberProfileProps) => {
   const getInitials = () => {
     return `${user.first_name[0]}${user.last_name[0]}`.toUpperCase();
   };
@@ -92,22 +96,53 @@ const MemberProfile = ({ user, membership, editable = false }: MemberProfileProp
               </div>
               <p className="text-base ml-6 capitalize">{user.gender}</p>
             </div>
-            {membership && (
-              <div className="space-y-1">
-                <div className="flex items-center gap-2 text-muted-foreground text-sm">
-                  <Calendar className="h-4 w-4" />
-                  <span className="font-medium">Membership Status</span>
-                </div>
-                <div className="ml-6">
-                  <Badge
-                    variant="outline"
-                    className="bg-green-50 text-green-700 border-green-200"
-                  >
-                    Active Member
-                  </Badge>
-                </div>
+
+            <div className="space-y-1">
+              <div className="flex items-center gap-2 text-muted-foreground text-sm">
+                <Calendar className="h-4 w-4" />
+                <span className="font-medium">Membership Status</span>
               </div>
-            )}
+              <div className="ml-6">
+                {(() => {
+                  const status = user.membership_status;
+                  const statusMap: Record<
+                    string,
+                    { label: string; className: string }
+                  > = {
+                    active: {
+                      label: "Active Member",
+                      className: "bg-green-50 text-green-700 border-green-200",
+                    },
+                    inactive: {
+                      label: "Inactive Member",
+                      className: "bg-gray-100 text-gray-600 border-gray-200",
+                    },
+                    pending: {
+                      label: "Pending Approval",
+                      className:
+                        "bg-yellow-50 text-yellow-700 border-yellow-200",
+                    },
+                    approved: {
+                      label: "Approved",
+                      className: "bg-blue-50 text-blue-700 border-blue-200",
+                    },
+                    rejected: {
+                      label: "Rejected",
+                      className: "bg-red-50 text-red-700 border-red-200",
+                    },
+                  };
+                  const { label, className } = statusMap[status] || {
+                    label: status,
+                    className: "bg-gray-100 text-gray-600 border-gray-200",
+                  };
+                  return (
+                    <Badge variant="outline" className={className}>
+                      {label}
+                    </Badge>
+                  );
+                })()}
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>

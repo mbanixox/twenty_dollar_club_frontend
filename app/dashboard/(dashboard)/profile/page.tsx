@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/card";
 import { Users, Award } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { requireAuth } from "@/lib/auth/session";
+import { requireMembership } from "@/lib/auth/session";
 import { Beneficiary, Project } from "@/lib/types";
 import { formatKSH } from "@/utils/format-currency";
 import { getProjects } from "@/lib/projects/actions";
@@ -16,7 +16,7 @@ import { getBeneficiaries } from "@/lib/beneficiaries/actions";
 import Link from "next/link";
 
 const Page = async () => {
-  const session = await requireAuth();
+  const session = await requireMembership();
 
   const beneficiariesData = await getBeneficiaries();
   const projectsData = await getProjects();
