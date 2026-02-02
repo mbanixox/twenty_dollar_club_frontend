@@ -17,7 +17,11 @@ import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { markRead, markUnread } from "@/lib/notifications/actions";
+import {
+  markRead,
+  markUnread,
+  deleteNotification as deleteNotificationAction,
+} from "@/lib/notifications/actions";
 import { useNotificationSocket } from "@/hooks/useNotificationSocket";
 
 const GeneralNotifications = ({
@@ -32,7 +36,7 @@ const GeneralNotifications = ({
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
 
-  useNotificationSocket({
+  const { refreshUnreadCount } = useNotificationSocket({
     membershipId,
     onNewNotification: (notification) => {
       setNotificationList((prev) => [notification, ...prev]);
@@ -126,6 +130,7 @@ const GeneralNotifications = ({
   };
 
   const toggleRead = async (id: string, currentReadStatus: boolean) => {
+    // Optimistic update
     setNotificationList((prev) =>
       prev.map((notif) =>
         notif.id === id ? { ...notif, read: !currentReadStatus } : notif,
@@ -138,7 +143,10 @@ const GeneralNotifications = ({
       } else {
         await markRead(id);
       }
+
+      refreshUnreadCount();
     } catch (error) {
+      // Revert on error
       setNotificationList((prev) =>
         prev.map((notif) =>
           notif.id === id ? { ...notif, read: currentReadStatus } : notif,
@@ -153,7 +161,9 @@ const GeneralNotifications = ({
     setNotificationList((prev) => prev.filter((notif) => notif.id !== id));
 
     try {
-      await deleteNotification(id);
+      await deleteNotificationAction(id);
+
+      refreshUnreadCount();
     } catch (error) {
       setNotificationList(prevList);
       console.error("Failed to delete notification:", error);

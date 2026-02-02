@@ -1,6 +1,5 @@
-// lib/websocket/notificationSocket.ts
 import { Socket, Channel } from "phoenix";
-import { Notification } from "../types";
+import { Notification } from "@/lib/types";
 
 const WEBSOCKET_URL =
   process.env.NEXT_PUBLIC_WEBSOCKET_URL || "ws://localhost:4000/socket";
@@ -8,6 +7,15 @@ const WEBSOCKET_URL =
 export class NotificationSocket {
   private socket: Socket;
   private channel: Channel | null = null;
+  private connectionCount: number = 0;
+  private channelCallbacks: Map<
+    string,
+    {
+      onUnreadCount?: (payload: { count: number }) => void;
+      onNewNotification?: (payload: Notification) => void;
+      onError?: (payload: { message: string }) => void;
+    }
+  > = new Map();
 
   constructor() {
     this.socket = new Socket(WEBSOCKET_URL, {
@@ -16,27 +24,43 @@ export class NotificationSocket {
         if (tries > 4) return 10000;
         return [1000, 2000, 5000, 10000][tries - 1] || 10000;
       },
-      logger: (kind, msg, data) => {
-        console.log(`${kind}: ${msg}`, data);
-      },
+    });
+
+    this.socket.onError(() => {
+      console.error("Socket connection error");
+    });
+
+    this.socket.onClose(() => {
+      console.log("Socket connection closed");
     });
   }
 
   connect() {
+    this.connectionCount++;
+
     if (this.socket.isConnected()) {
-      console.log("Socket already connected");
       return;
     }
+
     this.socket.connect();
   }
 
   disconnect() {
-    if (this.channel) {
-      this.channel.leave();
-      this.channel = null;
-    }
-    if (this.socket.isConnected()) {
-      this.socket.disconnect();
+    this.connectionCount--;
+
+    // Only actually disconnect if no one is using the socket
+    if (this.connectionCount <= 0) {
+      this.connectionCount = 0;
+
+      if (this.channel) {
+        this.channel.leave();
+        this.channel = null;
+        this.channelCallbacks.clear();
+      }
+
+      if (this.socket.isConnected()) {
+        this.socket.disconnect();
+      }
     }
   }
 
@@ -46,50 +70,61 @@ export class NotificationSocket {
 
   joinNotificationChannel(
     membershipId: string,
+    callbackId: string,
     callbacks: {
       onUnreadCount?: (payload: { count: number }) => void;
       onNewNotification?: (payload: Notification) => void;
       onError?: (payload: { message: string }) => void;
     },
   ) {
-    // Don't join if already in a channel
+    // Store callbacks for this subscriber
+    this.channelCallbacks.set(callbackId, callbacks);
+
+    // If channel already exists, just return it
     if (this.channel) {
-      console.log("Already in a notification channel");
       return this.channel;
     }
 
+    // Create new channel
     this.channel = this.socket.channel(`notifications:${membershipId}`, {});
 
-    // Listen for unread count updates
-    if (callbacks.onUnreadCount) {
-      this.channel.on("unread_count", (payload: { count: number }) => {
-        console.log("Unread count received:", payload);
-        callbacks.onUnreadCount!(payload);
+    // Listen for unread count updates - broadcast to all subscribers
+    this.channel.on("unread_count", (payload: { count: number }) => {
+      this.channelCallbacks.forEach((cb) => {
+        if (cb.onUnreadCount) {
+          cb.onUnreadCount(payload);
+        }
       });
-    }
+    });
 
-    // Listen for new notifications
-    if (callbacks.onNewNotification) {
-      this.channel.on("new_notification", (payload) => {
-        console.log("New notification received:", payload);
-        callbacks.onNewNotification!(payload);
+    // Listen for new notifications - broadcast to all subscribers
+    this.channel.on("new_notification", (payload) => {
+      this.channelCallbacks.forEach((cb) => {
+        if (cb.onNewNotification) {
+          cb.onNewNotification(payload);
+        }
       });
-    }
+    });
 
-    // Error handling
-    if (callbacks.onError) {
-      this.channel.on("error", (payload) => {
-        console.error("Notification error event received:", payload);
-        callbacks.onError!(payload);
+    // Error handling - broadcast to all subscribers
+    this.channel.on("error", (payload) => {
+      console.error("Notification error event received:", payload);
+      this.channelCallbacks.forEach((cb) => {
+        if (cb.onError) {
+          cb.onError(payload);
+        }
       });
-    }
+    });
 
-    // Return the channel so the caller can handle join
     return this.channel;
   }
 
-  leaveChannel() {
-    if (this.channel) {
+  leaveChannel(callbackId: string) {
+    // Remove this subscriber's callbacks
+    this.channelCallbacks.delete(callbackId);
+
+    // Only leave the channel if no one else is subscribed
+    if (this.channelCallbacks.size === 0 && this.channel) {
       this.channel.leave();
       this.channel = null;
     }
